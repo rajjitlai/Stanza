@@ -8,21 +8,34 @@ client
 
 export const account = new Account(client);
 
-export async function createSession(email) {
+export const createMagicURL = async(email, redirectUrl) => {
     try {
         const userId = ID.unique();
 
-        const sessionToken = await account.createEmailToken(
+        const response = await account.createMagicURLToken(
             userId,
             email,
-            true
+            redirectUrl
         );
 
-        return { sessionToken, userId };
+        return response;
 
     } catch (error) {
-        console.error("Error creating session:", error);
+        console.error("Error creating login session:", error);
         throw error;
+    }
+}
+
+export const verifyMagicURL = async () => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const secret = urlParams.get('secret')
+    const userId = urlParams.get('userId')
+
+    if (secret) {
+        const user = await account.updateMagicURLSession(userId, secret)
+        return user;
+    } else {
+        throw new Error('Invalid parameters')
     }
 }
 

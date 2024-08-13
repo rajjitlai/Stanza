@@ -1,32 +1,24 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link } from 'react-router-dom';
 
-import InputBox from "../components/InputBox";
-import { MdMailOutline } from "react-icons/md";
-import { IoKeyOutline } from "react-icons/io5";
-import { FcGoogle } from "react-icons/fc";
 import PageAnimation from "../common/PageAnimation";
 
 // appwrite config
-import { createSession, account } from "../config/appwrite";
+import { createMagicURL } from "../config/appwrite";
+import toast from 'react-hot-toast';
+
+import bwp from "../../assets/images/built-with-appwrite.png"
+import InputBox from '../components/InputBox';
+import { MdEmail } from 'react-icons/md';
 
 // eslint-disable-next-line react/prop-types
 const AuthForm = ({ type }) => {
     const [email, setEmail] = useState('');
-    const [otp, setOtp] = useState('');
-    const [userId, setUserId] = useState('');
-    const [isOtpSent, setIsOtpSent] = useState(false);
-    const navigate = useNavigate();
+    const [isEmailSent, setIsEmailSent] = useState(false);
 
     const validateEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
-    };
-
-    const validateOtp = (otp) => {
-        return otp.length === 6; // Assuming OTP is 6 digits
     };
 
     const handleEmailSubmit = async (e) => {
@@ -41,28 +33,10 @@ const AuthForm = ({ type }) => {
         }
 
         try {
-            // eslint-disable-next-line no-unused-vars
-            const { sessionToken, userId } = await createSession(email);
-            setIsOtpSent(true);
-            setUserId(userId);
-            toast.success(`OTP sent successfully to ${email}. Please check your inbox.`);
-        } catch (error) {
-            toast.error(`Error: ${error.message}`);
-        }
-    };
-
-    const handleOtpSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateOtp(otp)) {
-            toast.error('OTP must be 6 digits');
-            return;
-        }
-
-        try {
-            // eslint-disable-next-line no-unused-vars
-            const response = await account.createSession(userId, otp);
-            toast.success('OTP verified successfully. Redirecting to profile...');
-            navigate('/profile');
+            const redirectUrl = `${window.location.origin}/magic-url-redirect`;
+            await createMagicURL(email, redirectUrl);
+            setIsEmailSent(true);
+            toast.success(`Login link sent successfully to ${email}. Please check your inbox.`);
         } catch (error) {
             toast.error(`Error: ${error.message}`);
         }
@@ -70,50 +44,40 @@ const AuthForm = ({ type }) => {
 
     return (
         <PageAnimation keyValue={type}>
-            <section className="h-cover flex items-center justify-center">
-                <form className="w-[80%] max-w-[400px]" onSubmit={isOtpSent ? handleOtpSubmit : handleEmailSubmit}>
-                    <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
-                        Login to RJ&apos;s Blog<span className="text-main font-bold text-3xl">.</span>
-                    </h1>
-
-                    {!isOtpSent && (
-                        <InputBox
-                            type="email"
-                            placeholder="example@example.com"
-                            icon={<MdMailOutline />}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    )}
-
-                    {isOtpSent && (
-                        <InputBox
-                            type="text"
-                            placeholder="Enter OTP"
-                            icon={<IoKeyOutline />}
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                        />
-                    )}
-
-                    <button className="btn-dark center mt-14" type="submit">
-                        {isOtpSent ? 'Verify OTP' : 'Login'}
-                    </button>
-
-                    <div className="relative flex items-center gap-2 m-10 opacity-10 uppercase text-black font-bold">
-                        <hr className="w-1/2 border-black" />
-                        <p>or</p>
-                        <hr className="w-1/2 border-black" />
-                    </div>
-
-                    {!isOtpSent && (
-                        <button className="btn-dark capitalize flex items-center justify-center gap-4 w-[90%] center">
-                            <FcGoogle className="w-5" />
-                            Continue with Google
-                        </button>
-                    )}
-                </form>
-                <ToastContainer />
+            <section className="h-cover flex items-center justify-center flex-col-reverse md:flex-row gap-10">
+                <div className="w-full md:w-1/2 p-3 flex flex-col gap-3">
+                    <img src={bwp} alt="built-with-appwrite" className="w-[80%]" />
+                    <h3 className="text-lg mt-4">You will receive a verification email from Appwrite</h3>
+                    <p className="mt-2 text-xl">
+                        Please ensure that you have access to the email address provided.
+                        <br />
+                        The verification link will be sent to your email and is valid for a limited time.
+                        <br />
+                        If you do not receive the link, check your spam folder or try resending the link.
+                    </p>
+                    <p className="mt-2 text-xl">
+                        For any issues or assistance, please contact our <Link to="mailto:rjsblogg@gmail.com" className='text-xl underline' >support team.</Link>
+                    </p>
+                </div>
+                <>
+                    {isEmailSent
+                        ?
+                        <span className='text-3xl text-twitter'>
+                            You can close this page now
+                        </span>
+                        :
+                        <form onSubmit={handleEmailSubmit} className='flex items-center flex-col'>
+                            <InputBox
+                                icon={<MdEmail />}
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                            />
+                            <button type="submit" className='btn-dark'>Send</button>
+                        </form>
+                    }
+                </>
             </section>
         </PageAnimation>
     );

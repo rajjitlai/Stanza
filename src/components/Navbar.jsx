@@ -1,10 +1,29 @@
 import { Link, Outlet } from "react-router-dom"
 import { FcSearch } from "react-icons/fc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { account } from "../config/appwrite";
+import { RiUserSettingsLine } from "react-icons/ri";
 import { RiFileEditLine } from "react-icons/ri";
 
 const Navbar = () => {
     const [searchToggle, setSearchToggle] = useState(false)
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const user = await account.get();
+                setIsAuthenticated(true);
+                setIsAdmin(user.labels.includes('admin'));
+            } catch (error) {
+                setIsAuthenticated(false);
+                setIsAdmin(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     return (
         <>
@@ -26,17 +45,26 @@ const Navbar = () => {
                         <FcSearch className="text-xl" />
                     </button>
 
-                    <Link to="/editor" className="hidden md:flex gap-2 link items-center justify-center rounded-full">
-                        <RiFileEditLine />
-                        <p>Write</p>
-                    </Link>
-
-                    <Link className="btn-dark py-2" to="/login">
-                        Login
-                    </Link>
+                    {isAuthenticated ? (
+                        <>
+                            {isAdmin && (
+                                <Link to="/editor" className="hidden md:flex gap-2 link items-center justify-center rounded-full">
+                                    <RiFileEditLine size={24} />
+                                    <p>Write</p>
+                                </Link>
+                            )}
+                            <Link className="btn-dark py-2" to="/settings">
+                                <RiUserSettingsLine size={24} />
+                            </Link>
+                        </>
+                    ) : (
+                        <Link className="btn-dark py-2" to="/login">
+                            Login
+                        </Link>
+                    )}
                 </div>
             </nav>
-            
+
             <Outlet />
         </>
     )

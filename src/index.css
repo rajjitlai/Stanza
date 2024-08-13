@@ -27,6 +27,7 @@
 
   ::selection {
     @apply bg-main/30;
+    @apply text-white;
   }
 
   img {
