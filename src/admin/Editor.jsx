@@ -1,34 +1,37 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { account } from "../config/appwrite"
-import BlogEditor from "./BlogEditor"
-import PublishForm from "./PublishForm"
+import { getCurrentUser } from "../config/supabase"
+import PoemEditor from "./BlogEditor"
 
 const Editor = () => {
     const navigate = useNavigate()
-    const [editorState, setEditorState] = useState("editor")
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const checkLogin = async () => {
             try {
-                const user = await account.get();
+                const user = await getCurrentUser()
                 if (!user) {
-                    navigate('/')
+                    navigate('/login')
+                    return
                 }
+                // Store user ID for later use
+                localStorage.setItem('userId', user.id)
+                setIsLoading(false)
             } catch (error) {
+                console.error("Auth error:", error)
                 navigate('/login')
             }
-        };
+        }
 
-        checkLogin();
-    }, [navigate]);
+        checkLogin()
+    }, [navigate])
 
-    return (
-        <>
-            <BlogEditor />
-            <PublishForm />
-        </>
-    )
+    if (isLoading) {
+        return <div className="flex items-center justify-center h-screen">Loading...</div>
+    }
+
+    return <PoemEditor />
 }
 
 export default Editor

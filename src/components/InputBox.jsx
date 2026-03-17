@@ -13,17 +13,17 @@ const InputBox = forwardRef(({ name, type, id, value, placeholder, icon, error, 
                 placeholder={placeholder}
                 defaultValue={value}
                 id={id}
-                className="input-box"
+                className="input-box bg-card-bg text-text-primary placeholder:text-text-muted"
                 ref={ref}
                 {...rest}
             />
             <span className="input-icon">{icon}</span>
             {type === "password" && (
-                <span className="input-icon left-[auto] right-4 cursor-pointer" onClick={() => setPassVisible(prev => !prev)}>
+                <span className="input-icon left-[auto] right-4 cursor-pointer text-text-secondary" onClick={() => setPassVisible(prev => !prev)}>
                     {passVisible ? <IoEyeOutline /> : <IoEyeOffOutline />}
                 </span>
             )}
-            {error && <p className="text-red-500 text-xs italic mt-1">{error}</p>}
+            {error && <p className="text-error text-xs italic mt-1">{error}</p>}
         </div>
     );
 });

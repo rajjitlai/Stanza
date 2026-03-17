@@ -1,31 +1,32 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { verifyMagicURL } from '../config/appwrite';
 import toast from 'react-hot-toast';
 
-const MagicURLRedirect = () => {
+const AuthRedirect = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const verifyUser = async () => {
-            try {
-                toast.dismiss();
-                const user = await verifyMagicURL();
-                if (user) {
-                    toast.success('Login successful!');
-                    navigate('/profile');
-                }
-            } catch (error) {
-                toast.dismiss();
-                toast.error(`Verification failed: ${error.message}`);
-                navigate('/login');
-            }
-        };
+        // This component handles auth redirects if needed
+        // With Supabase, most redirects are handled automatically
+        // This can be used for password reset, email verification, etc.
 
-        verifyUser();
+        const urlParams = new URLSearchParams(window.location.search);
+        const type = urlParams.get('type'); // e.g., 'recovery', 'invite', 'signup'
+
+        if (!type) {
+            navigate('/profile');
+            return;
+        }
+
+        toast.success('Authentication processed!');
+        navigate('/profile');
     }, [navigate]);
 
-    return <p>Verifying...</p>;
+    return (
+        <div className="flex items-center justify-center h-screen">
+            <p className="text-lg">Processing authentication...</p>
+        </div>
+    );
 };
 
-export default MagicURLRedirect;
+export default AuthRedirect;

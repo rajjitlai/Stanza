@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { account } from '../config/appwrite';
+import { getAuthSession } from '../config/supabase';
 
 const PublicRoute = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -8,8 +8,8 @@ const PublicRoute = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                await account.get();
-                setIsAuthenticated(true);
+                const session = await getAuthSession();
+                setIsAuthenticated(!!session?.user);
             } catch (error) {
                 setIsAuthenticated(false);
             }
@@ -19,7 +19,7 @@ const PublicRoute = () => {
     }, []);
 
     if (isAuthenticated === null) {
-        return <div>Loading...</div>;
+        return <div className="flex items-center justify-center h-screen">Loading...</div>;
     }
 
     return isAuthenticated ? <Navigate to="/profile" /> : <Outlet />;
