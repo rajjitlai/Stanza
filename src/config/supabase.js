@@ -122,58 +122,6 @@ export const searchPoems = async (query, category = null) => {
     return data || [];
 };
 
-// Search by username
-export const searchByAuthor = async (username) => {
-    const { data, error } = await supabase
-        .from('poems')
-        .select('*, profiles(username, avatar_url)')
-        .ilike('profiles.username', `%${username}%`)
-        .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data || [];
-};
-
-// Profile operations
-export const getCommentsForPoem = async (poemId) => {
-    if (!poemId || poemId === 'null') return [];
-
-    const { data, error } = await supabase
-        .from('comments')
-        .select('*, profiles(username, avatar_url)')
-        .eq('poem_id', poemId)
-        .is('parent_comment_id', null)
-        .order('created_at', { ascending: true });
-
-    if (error) throw error;
-    return data || [];
-};
-
-export const addCommentToPoem = async (userId, poemId, content) => {
-    const { data, error } = await supabase
-        .from('comments')
-        .insert([{
-            user_id: userId,
-            poem_id: poemId,
-            content,
-            created_at: new Date(),
-        }])
-        .select('*, profiles(username, avatar_url)')
-        .single();
-
-    if (error) throw error;
-    return data;
-};
-
-export const deleteCommentById = async (commentId) => {
-    const { error } = await supabase
-        .from('comments')
-        .delete()
-        .eq('id', commentId);
-
-    if (error) throw error;
-};
-
 // Profile operations
 export const getUserProfile = async (userId) => {
     const { data, error } = await supabase
@@ -195,42 +143,6 @@ export const updateUserProfile = async (userId, updates) => {
     return data[0];
 };
 
-// Get user statistics
-export const getUserStats = async (userId) => {
-    try {
-        // Get poem count
-        const { count: poemCount } = await supabase
-            .from('poems')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', userId);
-
-        // Get like count (across all user's poems)
-        const { count: likeCount } = await supabase
-            .from('user_likes')
-            .select('id', { count: 'exact', head: true })
-            .in('poem_id', supabase
-                .from('poems')
-                .select('id', { count: 'exact', head: true })
-                .eq('user_id', userId)
-            );
-
-        // Get follower count
-        const { count: followerCount } = await supabase
-            .from('followers')
-            .select('follower_id', { count: 'exact', head: true })
-            .eq('following_id', userId);
-
-        return {
-            poems: poemCount || 0,
-            likes: likeCount || 0,
-            followers: followerCount || 0,
-        };
-    } catch (error) {
-        console.error('Error getting user stats:', error);
-        return { poems: 0, likes: 0, followers: 0 };
-    }
-};
-
 // Admin functions
 export const getAllUsers = async () => {
     const { data, error } = await supabase
@@ -249,18 +161,6 @@ export const deleteUser = async (userId) => {
         .eq('id', userId);
 
     if (error) throw error;
-};
-
-// Get user poems with count
-export const getUserPoemsWithCount = async (userId) => {
-    const { data, error } = await supabase
-        .from('poems')
-        .select('*, profiles(username, avatar_url)')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
 };
 
 export default supabase;
