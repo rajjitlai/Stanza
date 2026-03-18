@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { toggleSave } from '../config/saved';
 import toast from 'react-hot-toast';
-import { FiBookmark } from 'react-icons/fi';
+import { RiBookmarkFill, RiBookmarkLine } from 'react-icons/ri';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SaveButton = ({ poemId, initialSaved = false, initialCount = 0 }) => {
     const [saved, setSaved] = useState(initialSaved);
@@ -28,18 +29,41 @@ const SaveButton = ({ poemId, initialSaved = false, initialCount = 0 }) => {
     };
 
     return (
-        <button
+        <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={handleSave}
             disabled={isLoading}
-            className="flex items-center gap-2 text-text-secondary hover:text-yellow-500 transition disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                saved 
+                ? 'bg-accent/10 border-accent/20 text-accent' 
+                : 'bg-glass border-glass-border text-text-secondary hover:border-accent/30 hover:text-accent'
+            }`}
         >
-            {saved ? (
-                <FiBookmark size={20} className="text-yellow-500" />
-            ) : (
-                <FiBookmark size={20} />
-            )}
-            <span className="text-sm font-medium">{count}</span>
-        </button>
+            <div className="relative">
+                <AnimatePresence mode="wait">
+                    {saved ? (
+                        <motion.div
+                            key="filled"
+                            initial={{ y: -10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: 10, opacity: 0 }}
+                        >
+                            <RiBookmarkFill size={22} />
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="outline"
+                            initial={{ y: 10, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            exit={{ y: -10, opacity: 0 }}
+                        >
+                            <RiBookmarkLine size={22} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+            <span className="font-medium text-sm">{count}</span>
+        </motion.button>
     );
 };
 

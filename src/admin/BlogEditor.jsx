@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom"
 import PageAnimation from "../common/PageAnimation"
 import toast from "react-hot-toast"
 import { createPoem } from "../config/supabase"
+import { RiQuillPenLine, RiDraftLine, RiCloseLine } from "react-icons/ri"
+import { motion } from "framer-motion"
 
 const PoemEditor = () => {
     const navigate = useNavigate()
@@ -32,17 +34,7 @@ const PoemEditor = () => {
                 return
             }
 
-            const poemData = {
-                user_id: userId,
-                title,
-                content,
-                category,
-                created_at: new Date(),
-            }
-
             if (isDraft) {
-                // For drafts, we might want to add a draft status in the database
-                // For now, we just save as regular poem with draft flag
                 toast.success("Poem saved as draft!")
             } else {
                 await createPoem(userId, title, content, category)
@@ -61,125 +53,106 @@ const PoemEditor = () => {
         }
     }
 
-    const handleSaveDraft = async (e) => {
-        e.preventDefault()
-        if (!title.trim() || !content.trim()) {
-            toast.error("Please fill in title and content")
-            return
-        }
-
-        setIsLoading(true)
-        try {
-            const userId = localStorage.getItem("userId")
-            if (!userId) {
-                toast.error("Please log in first")
-                navigate("/login")
-                return
-            }
-
-            // Save draft with draft flag
-            toast.success("Poem saved as draft!")
-            setIsDraft(true)
-            navigate("/profile")
-        } catch (error) {
-            toast.error(`Error saving draft: ${error.message}`)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
     return (
-        <>
-            <nav className="navbar">
-                <Link to="/" className="flex-none">
-                    Stanza<span className="text-accent text-[20px] font-bold">.</span>
-                </Link>
-                <p className="max-md:hidden text-text-primary line-clamp-1 w-full">
-                    {isDraft ? "Draft Poetry" : "New Poetry"}
-                </p>
-
-                <div className="flex gap-4 ml-auto">
-                    <button
-                        onClick={handleSaveDraft}
-                        className="btn-light py-2 px-4"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? "Saving..." : "Save Draft"}
-                    </button>
-                    <Link to="/profile" className="btn-light py-2 px-4">
-                        Cancel
-                    </Link>
-                </div>
-            </nav>
-
-            <PageAnimation>
-                <section className="bg-dark-bg min-h-screen">
-                    <div className="mx-auto max-w-[900px] p-4">
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                            <div>
-                                <label className="block text-lg font-semibold mb-2 text-text-primary">
-                                    Title
-                                </label>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="Enter your poem title"
-                                    className="w-full p-3 border border-text-muted rounded-lg focus:outline-none focus:border-accent text-text-primary bg-card-bg focus:ring-1 focus:ring-accent transition"
-                                />
+        <PageAnimation>
+            <div className="min-h-screen pt-10 pb-20 px-4">
+                <div className="max-w-4xl mx-auto pt-8">
+                    {/* Header */}
+                    <header className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 glass-card p-6">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 bg-accent rounded-xl flex items-center justify-center text-darker-bg font-serif text-2xl font-bold">
+                                S
                             </div>
-
                             <div>
-                                <label className="block text-lg font-semibold mb-2 text-text-primary">
-                                    Category
-                                </label>
-                                <select
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    className="w-full p-3 border border-text-muted rounded-lg focus:outline-none focus:border-accent text-text-primary bg-card-bg focus:ring-1 focus:ring-accent transition"
-                                >
-                                    {categories.map((cat) => (
-                                        <option key={cat} value={cat}>
-                                            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                                        </option>
-                                    ))}
-                                </select>
+                                <h1 className="text-xl font-bold text-text-primary">
+                                    {isDraft ? "Refining Draft" : "New Stanza"}
+                                </h1>
+                                <p className="text-xs text-text-muted uppercase tracking-widest">Creative Workshop</p>
                             </div>
+                        </div>
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <Link to="/profile" className="btn-secondary !py-2 flex-1 md:flex-none justify-center">
+                                <RiCloseLine size={20} />
+                                <span>Cancel</span>
+                            </Link>
+                            <button
+                                onClick={handleSubmit}
+                                disabled={isLoading}
+                                className="btn-primary !py-2 flex-1 md:flex-none justify-center shadow-accent-glow"
+                            >
+                                <RiQuillPenLine size={20} />
+                                <span>{isLoading ? "Publishing..." : "Publish"}</span>
+                            </button>
+                        </div>
+                    </header>
 
-                            <div>
-                                <label className="block text-lg font-semibold mb-2 text-text-primary">
-                                    Your Poetry
-                                </label>
-                                <textarea
-                                    value={content}
-                                    onChange={(e) => setContent(e.target.value)}
-                                    placeholder="Write your poem here..."
-                                    rows="15"
-                                    className="w-full p-3 border border-text-muted rounded-lg focus:outline-none focus:border-accent font-mono text-text-primary bg-card-bg focus:ring-1 focus:ring-accent transition resize-y"
-                                />
-                                <div className="flex justify-between mt-2 text-sm">
-                                    <span className="text-text-secondary">Character count: {content.length}</span>
-                                    {isDraft && <span className="text-accent">Draft mode</span>}
+                    {/* Editor Form */}
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {/* Main Content */}
+                            <div className="md:col-span-2 space-y-6">
+                                <div className="glass-card p-8">
+                                    <input
+                                        type="text"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        placeholder="Poem Title"
+                                        className="w-full bg-transparent border-none text-4xl font-serif font-bold text-text-primary placeholder:text-text-muted/30 outline-none mb-8"
+                                    />
+                                    
+                                    <textarea
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                        placeholder="Write your stanza here..."
+                                        rows="15"
+                                        className="w-full bg-transparent border-none text-xl font-serif leading-[1.8] text-text-secondary placeholder:text-text-muted/30 outline-none resize-none"
+                                    />
+                                    
+                                    <div className="mt-8 pt-6 border-t border-glass-border flex justify-between text-xs text-text-muted uppercase tracking-widest">
+                                        <span>Character count: {content.length}</span>
+                                        <span>Poetry is silence in search of a sound</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <button
-                                    type="submit"
-                                    className="btn-dark py-3 flex-1"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? "Publishing..." : "Publish Poem"}
-                                </button>
-                                <Link to="/profile" className="btn-light py-3 flex-1 text-center hover:bg-card-bg">
-                                    Cancel
-                                </Link>
-                            </div>
-                        </form>
-                    </div>
-                </section>
-            </PageAnimation>
-        </>
+                            {/* Sidebar Controls */}
+                            <aside className="space-y-6">
+                                <div className="glass-card p-6">
+                                    <label className="block text-xs font-bold text-text-muted uppercase tracking-widest mb-4">
+                                        Theme / Category
+                                    </label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {categories.map((cat) => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                onClick={() => setCategory(cat)}
+                                                className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all border ${
+                                                    category === cat
+                                                        ? "bg-accent text-darker-bg border-accent"
+                                                        : "bg-glass border-glass-border text-text-secondary hover:border-accent/40"
+                                                }`}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="glass-card p-6">
+                                    <h3 className="text-sm font-bold text-text-primary mb-4">Writing Tips</h3>
+                                    <ul className="text-xs text-text-secondary space-y-3 italic">
+                                        <li>• Use line breaks for emotional rhythm.</li>
+                                        <li>• Show, don't just tell.</li>
+                                        <li>• Let the imagery breathe.</li>
+                                    </ul>
+                                </div>
+                            </aside>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </PageAnimation>
     )
 }
 

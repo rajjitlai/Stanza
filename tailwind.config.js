@@ -2,34 +2,34 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    colors: {
-      'white': '#FFFFFF',
-      'dark-bg': '#0f0f13',
-      'darker-bg': '#08080c',
-      'card-bg': '#1a1a24',
-      'accent': '#d4af37',
-      'accent-soft': '#f3e5ab',
-      'text-primary': '#e0e0e0',
-      'text-secondary': '#a0a0a0',
-      'text-muted': '#6b6b75',
-      'error': '#e57373',
-      'transparent': 'transparent',
-      'twitter': '#1DA1F2',
-    },
     extend: {
+      colors: {
+        'dark-bg': '#050508',
+        'darker-bg': '#020204',
+        'card-bg': 'rgba(20, 20, 28, 0.7)',
+        'accent': '#d4af37',
+        'accent-light': '#f3e5ab',
+        'text-primary': '#f8f8f8',
+        'text-secondary': '#a0a0a8',
+        'text-muted': '#4a4a55',
+        'error': '#ff5f5f',
+        'success': '#00d084',
+        'glass': 'rgba(255, 255, 255, 0.03)',
+        'glass-border': 'rgba(255, 255, 255, 0.08)',
+      },
       fontFamily: {
-        inter: ["'Inter'", "sans-serif"],
-        gelasio: ["'Gelasio'", "serif"]
+        'sans': ["'Inter'", "sans-serif"],
+        'serif': ["'Playfair Display'", "serif"],
+        'mono': ["'JetBrains Mono'", "monospace"],
       },
-      fontSize: {
-        'sm': '12px',
-        'base': '14px',
-        'xl': '16px',
-        '2xl': '20px',
-        '3xl': '28px',
-        '4xl': '38px',
-        '5xl': '50px',
+      boxShadow: {
+        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
+        'accent-glow': '0 0 20px rgba(212, 175, 55, 0.15)',
       },
+      backgroundImage: {
+        'noise': "url('/assets/images/noise.png')",
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      }
     },
   },
   plugins: [],

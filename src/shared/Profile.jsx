@@ -3,7 +3,9 @@ import { Link } from "react-router-dom"
 import { getUserPoems, getAllPoems, deletePoem } from "../config/supabase"
 import toast from "react-hot-toast"
 import PageAnimation from "../common/PageAnimation"
-import { RiDeleteBin6Line } from "react-icons/ri"
+import { RiDeleteBin6Line, RiPencilLine, RiSearchLine, RiQuillPenLine } from "react-icons/ri"
+import { motion, AnimatePresence } from "framer-motion"
+import { CardSkeleton } from "../components/Skeleton"
 
 const Profile = () => {
     const [poems, setPoems] = useState([])
@@ -55,126 +57,152 @@ const Profile = () => {
 
     return (
         <PageAnimation>
-            <section className="h-cover bg-dark-bg">
-                <div className="mx-auto max-w-[900px] p-4">
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                        <h1 className="text-3xl font-bold text-text-primary">Poetry Feed</h1>
-                        <Link to="/editor" className="btn-dark py-2 px-6 text-base">
-                            Write New Poem
+            <section className="px-4 md:px-[7vw] lg:px-[10vw] pb-20">
+                <div className="max-w-5xl mx-auto">
+                    {/* Hero Section */}
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+                        <div>
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-text-primary mb-2">
+                                Poetry Feed
+                            </h1>
+                            <p className="text-text-secondary italic">
+                                "Poetry is the rhythmical creation of beauty in words." — Edgar Allan Poe
+                            </p>
+                        </div>
+                        <Link to="/editor" className="btn-primary group">
+                            <RiQuillPenLine className="text-xl group-hover:rotate-12 transition-transform" />
+                            Write a Stanza
                         </Link>
                     </div>
 
-                    {/* Search and Filter Bar */}
-                    <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-card-bg rounded-xl border border-text-muted">
-                        <div className="flex-1 relative">
-                            <input
-                                type="text"
-                                placeholder="Search poems, categories, or authors..."
-                                className="w-full bg-darker-bg text-text-primary border border-text-muted rounded-lg py-3 pl-10 pr-4 outline-none focus:border-accent transition"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                            </span>
-                        </div>
-                        <div className="flex gap-2">
+                    {/* Toolbar */}
+                    <div className="glass-card p-2 mb-12 flex flex-col md:flex-row gap-2 items-center">
+                        <div className="flex p-1 bg-darker-bg/50 rounded-xl w-full md:w-auto">
                             <button
                                 onClick={() => setFilter("all")}
-                                className={`pb-2 px-4 font-semibold rounded-lg transition whitespace-nowrap ${filter === "all"
-                                    ? "bg-accent/20 text-accent border-b-2 border-accent"
-                                    : "text-text-secondary hover:bg-card-bg"
+                                className={`flex-1 md:flex-none px-6 py-2 rounded-lg font-medium transition-all ${filter === "all"
+                                    ? "bg-accent text-darker-bg shadow-lg"
+                                    : "text-text-secondary hover:text-text-primary"
                                     }`}
                             >
-                                All Poems
+                                All Work
                             </button>
                             <button
                                 onClick={() => setFilter("mine")}
-                                className={`pb-2 px-4 font-semibold rounded-lg transition whitespace-nowrap ${filter === "mine"
-                                    ? "bg-accent/20 text-accent border-b-2 border-accent"
-                                    : "text-text-secondary hover:bg-card-bg"
+                                className={`flex-1 md:flex-none px-6 py-2 rounded-lg font-medium transition-all ${filter === "mine"
+                                    ? "bg-accent text-darker-bg shadow-lg"
+                                    : "text-text-secondary hover:text-text-primary"
                                     }`}
                             >
-                                My Poems
+                                My Stanzas
                             </button>
+                        </div>
+                        
+                        <div className="relative flex-1 w-full">
+                            <RiSearchLine className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
+                            <input
+                                type="text"
+                                placeholder="Search by title, author, or theme..."
+                                className="w-full bg-transparent border-none py-3 pl-12 pr-4 outline-none text-text-primary placeholder:text-text-muted/60"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
                     </div>
 
-                    {isLoading ? (
-                        <div className="text-center py-10">
-                            <div className="inline-block spinner mb-4"></div>
-                            <p className="text-lg text-text-secondary">Loading poems...</p>
-                        </div>
-                    ) : filteredPoems.length === 0 ? (
-                        <div className="text-center py-10">
-                            <div className="text-6xl mb-4 opacity-20">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path></svg>
-                            </div>
-                            <p className="text-lg text-text-secondary">
-                                {filter === "mine" && !searchTerm
-                                    ? "You haven't written any poems yet. Start writing!"
-                                    : filter === "mine" && searchTerm
-                                    ? "No poems match your search."
-                                    : !searchTerm
-                                    ? "No poems available yet. Be the first to share!"
-                                    : "No poems match your search."}
-                            </p>
-                            {filter !== "mine" && !searchTerm && (
-                                <Link to="/editor" className="btn-dark py-2 px-6 mt-4 inline-block">
-                                    Write First Poem
+                    {/* Content */}
+                    <AnimatePresence mode="wait">
+                        {isLoading ? (
+                            <motion.div 
+                                key="loading"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="grid gap-8"
+                            >
+                                {[1, 2, 3].map(i => <CardSkeleton key={i} />)}
+                            </motion.div>
+                        ) : filteredPoems.length === 0 ? (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="text-center py-20 glass-card"
+                            >
+                                <RiQuillPenLine className="text-6xl text-text-muted/20 mx-auto mb-4" />
+                                <p className="text-xl text-text-secondary font-serif mb-6">
+                                    The ink has yet to touch the page here.
+                                </p>
+                                <Link to="/editor" className="btn-secondary inline-flex">
+                                    Start Writing
                                 </Link>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="grid gap-4">
-                            {filteredPoems.map((poem) => (
-                                <div
-                                    key={poem.id}
-                                    className="card hover:bg-card-bg/80"
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div className="flex-1">
-                                            <Link to={`/poem/${poem.id}`}>
-                                                <h3 className="text-xl font-bold text-text-primary hover:text-accent transition">
-                                                    {poem.title}
-                                                </h3>
-                                            </Link>
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <span className="text-sm text-text-secondary">
-                                                    By <span className="text-accent">{poem.profiles?.username || 'Unknown'}</span>
-                                                </span>
-                                                <span className="text-xs text-text-muted">
-                                                    <span className="bg-darker-bg px-2 py-1 rounded text-xs border border-text-muted">
-                                                        {poem.category || "general"}
-                                                    </span>
-                                                </span>
+                            </motion.div>
+                        ) : (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="grid gap-8"
+                            >
+                                {filteredPoems.map((poem, index) => (
+                                    <motion.div
+                                        key={poem.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="glass-card group hover-lift overflow-hidden"
+                                    >
+                                        <div className="p-8">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="category-badge">{poem.category || "general"}</span>
+                                                        <span className="text-xs text-text-muted uppercase tracking-widest">
+                                                            {new Date(poem.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                    </div>
+                                                    <Link to={`/poem/${poem.id}`}>
+                                                        <h3 className="poem-title group-hover:text-accent transition-colors">
+                                                            {poem.title}
+                                                        </h3>
+                                                    </Link>
+                                                    <p className="text-sm text-text-secondary">
+                                                        by <span className="font-serif italic text-text-primary">@{poem.profiles?.username || 'anonymous'}</span>
+                                                    </p>
+                                                </div>
+                                                
+                                                {userId === poem.user_id && (
+                                                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button
+                                                            onClick={() => handleDelete(poem.id)}
+                                                            className="p-2 bg-error/10 text-error rounded-lg hover:bg-error hover:text-white transition-all"
+                                                            title="Delete"
+                                                        >
+                                                            <RiDeleteBin6Line size={18} />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="relative">
+                                                <p className="poem-text line-clamp-4 italic text-text-secondary/80">
+                                                    {poem.content}
+                                                </p>
+                                                <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-bg to-transparent" />
+                                            </div>
+
+                                            <div className="mt-8 flex items-center justify-between">
+                                                <Link to={`/poem/${poem.id}`} className="text-accent font-medium flex items-center gap-2 hover:gap-3 transition-all">
+                                                    Read full stanza <span className="text-lg">→</span>
+                                                </Link>
+                                                <div className="flex items-center gap-4 text-text-muted text-sm">
+                                                    <span>{Math.ceil(poem.content.split(' ').length / 200)} min read</span>
+                                                </div>
                                             </div>
                                         </div>
-                                        {userId === poem.user_id && (
-                                            <button
-                                                onClick={() => handleDelete(poem.id)}
-                                                className="text-error hover:text-error/80 transition p-2"
-                                                title="Delete poem"
-                                            >
-                                                <RiDeleteBin6Line size={20} />
-                                            </button>
-                                        )}
-                                    </div>
-                                    <p className="text-base text-text-secondary line-clamp-3 my-3 leading-relaxed">
-                                        {poem.content}
-                                    </p>
-                                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-text-muted/30">
-                                        <p className="text-xs text-text-muted">
-                                            {new Date(poem.created_at).toLocaleDateString()}
-                                        </p>
-                                        <Link to={`/poem/${poem.id}`} className="text-accent text-sm hover:underline">
-                                            Read Poem &rarr;
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </section>
         </PageAnimation>

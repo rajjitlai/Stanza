@@ -5,6 +5,8 @@ import { loginWithEmail, signupWithEmail } from "../config/supabase";
 import toast from 'react-hot-toast';
 import InputBox from '../components/InputBox';
 import { MdEmail, MdLock } from 'react-icons/md';
+import { motion } from 'framer-motion';
+import { RiQuillPenLine } from 'react-icons/ri';
 
 // eslint-disable-next-line react/prop-types
 const AuthForm = ({ type = "login" }) => {
@@ -69,63 +71,132 @@ const AuthForm = ({ type = "login" }) => {
 
     return (
         <PageAnimation keyValue={type}>
-            <section className="h-cover flex items-center justify-center flex-col-reverse md:flex-row gap-10 bg-dark-bg">
-                <div className="w-full md:w-1/2 p-3 flex flex-col gap-3">
-                    <h2 className="text-3xl font-bold text-text-primary">Poetry Sharing Platform</h2>
-                    <h3 className="text-lg mt-4 text-text-secondary">Share Your Poetry & Ideas</h3>
-                    <p className="mt-2 text-xl text-text-secondary">
-                        Join our community of poets and storytellers. Share your creative ideas and connect with others who appreciate poetry and writing.
-                    </p>
-                    <p className="mt-2 text-xl text-text-secondary">
-                        For any issues, please contact our <Link to="mailto:support@poetryshare.com" className='text-accent underline text-xl'>support team.</Link>
-                    </p>
-                </div>
+            <div className="min-h-[90vh] pt-10 flex items-center justify-center p-4">
+                <div className="max-w-5xl w-full grid md:grid-cols-2 gap-12 items-center">
+                    {/* Left: Branding/Marketing */}
+                    <div className="hidden md:block space-y-8">
+                        <div className="flex items-center gap-3">
+                            <div className="w-14 h-14 bg-accent rounded-2xl flex items-center justify-center text-darker-bg font-serif text-3xl font-bold shadow-accent-glow">
+                                S
+                            </div>
+                            <h1 className="text-3xl font-bold tracking-tight text-text-primary">
+                                Stanza<span className="text-accent">.</span>
+                            </h1>
+                        </div>
+                        
+                        <div className="space-y-6">
+                            <h2 className="text-4xl lg:text-5xl font-serif font-bold leading-tight text-text-primary">
+                                Where every word <br /> 
+                                <span className="text-accent italic">finds its home.</span>
+                            </h2>
+                            <p className="text-lg text-text-secondary leading-relaxed max-w-md italic font-serif">
+                                "Poetry is the shadow cast by our streetlight imaginations." — Lawrence Ferlinghetti
+                            </p>
+                        </div>
 
-                <form onSubmit={handleSubmit} className='flex items-center flex-col gap-4 w-full md:w-1/2 p-3 bg-darker-bg rounded-2xl border border-text-muted/30 backdrop-blur-sm'>
-                    <h2 className="text-2xl font-bold mb-4 text-text-primary">{type === 'login' ? 'Login' : 'Sign Up'}</h2>
+                        <div className="flex items-center gap-6 pt-4">
+                            <div className="flex -space-x-3">
+                                {[1,2,3,4].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-2 border-dark-bg bg-glass flex items-center justify-center text-[10px] font-bold text-accent">
+                                        P{i}
+                                    </div>
+                                ))}
+                            </div>
+                            <p className="text-sm text-text-muted">Join 500+ poets sharing their stanzas daily.</p>
+                        </div>
+                    </div>
 
-                    <InputBox
-                        icon={<MdEmail />}
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                    />
-
-                    <InputBox
-                        icon={<MdLock />}
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                    />
-
-                    {type === 'signup' && (
-                        <InputBox
-                            icon={<MdLock />}
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm your password"
-                        />
-                    )}
-
-                    <button
-                        type="submit"
-                        className='btn-dark w-full'
-                        disabled={isLoading}
+                    {/* Right: Form */}
+                    <motion.div 
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className="glass-card p-8 md:p-12 relative overflow-hidden"
                     >
-                        {isLoading ? 'Loading...' : (type === 'login' ? 'Login' : 'Sign Up')}
-                    </button>
+                        {/* Decorative Gradient */}
+                        <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full" />
+                        
+                        <div className="relative z-10">
+                            <div className="mb-10">
+                                <h2 className="text-3xl font-serif font-bold text-text-primary mb-2">
+                                    {type === 'login' ? 'Welcome Back' : 'Begin Your Journey'}
+                                </h2>
+                                <p className="text-text-secondary">
+                                    {type === 'login' ? 'The ink is waiting. Continue your story.' : 'Create your account and start sharing stanzas.'}
+                                </p>
+                            </div>
 
-                    <p className="text-center">
-                        {type === 'login' ? "Don't have an account? " : "Already have an account? "}
-                        <Link to={type === 'login' ? '/signup' : '/login'} className='text-accent underline'>
-                            {type === 'login' ? 'Sign Up' : 'Login'}
-                        </Link>
-                    </p>
-                </form>
-            </section>
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <div className="space-y-4">
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors">
+                                            <MdEmail size={20} />
+                                        </div>
+                                        <input
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="Email Address"
+                                            className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                        />
+                                    </div>
+
+                                    <div className="relative group">
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors">
+                                            <MdLock size={20} />
+                                        </div>
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="Password"
+                                            className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                        />
+                                    </div>
+
+                                    {type === 'signup' && (
+                                        <div className="relative group">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors">
+                                                <MdLock size={20} />
+                                            </div>
+                                            <input
+                                                type="password"
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                placeholder="Confirm Password"
+                                                className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn-primary w-full justify-center !py-3.5 mt-8 shadow-accent-glow"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? (
+                                        <div className="w-5 h-5 border-2 border-darker-bg/30 border-t-darker-bg rounded-full animate-spin" />
+                                    ) : (
+                                        <>
+                                            <RiQuillPenLine size={20} />
+                                            <span>{type === 'login' ? 'Login' : 'Create Account'}</span>
+                                        </>
+                                    )}
+                                </button>
+
+                                <div className="pt-6 text-center border-t border-glass-border">
+                                    <p className="text-text-secondary text-sm">
+                                        {type === 'login' ? "New to the community? " : "Already sharing stanzas? "}
+                                        <Link to={type === 'login' ? '/signup' : '/login'} className="text-accent font-bold hover:text-accent-light transition-colors underline underline-offset-4 decoration-accent/30">
+                                            {type === 'login' ? 'Create an account' : 'Sign in here'}
+                                        </Link>
+                                    </p>
+                                </div>
+                            </form>
+                        </div>
+                    </motion.div>
+                </div>
+            </div>
         </PageAnimation>
     );
 };

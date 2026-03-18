@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { toggleLike } from '../config/likes';
 import toast from 'react-hot-toast';
-import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
+import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const LikeButton = ({ poemId, initialLiked = false, initialCount = 0 }) => {
     const [liked, setLiked] = useState(initialLiked);
@@ -28,18 +29,49 @@ const LikeButton = ({ poemId, initialLiked = false, initialCount = 0 }) => {
     };
 
     return (
-        <button
+        <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={handleLike}
             disabled={isLoading}
-            className="flex items-center gap-2 text-text-secondary hover:text-red-500 transition disabled:opacity-50"
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                liked 
+                ? 'bg-error/10 border-error/20 text-error' 
+                : 'bg-glass border-glass-border text-text-secondary hover:border-error/30 hover:text-error'
+            }`}
         >
-            {liked ? (
-                <AiFillLike size={20} className="text-red-500" />
-            ) : (
-                <AiOutlineLike size={20} />
-            )}
-            <span className="text-sm font-medium">{count}</span>
-        </button>
+            <div className="relative">
+                <AnimatePresence mode="wait">
+                    {liked ? (
+                        <motion.div
+                            key="filled"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                        >
+                            <RiHeartFill size={22} />
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="outline"
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                        >
+                            <RiHeartLine size={22} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                
+                {liked && (
+                    <motion.div 
+                        initial={{ scale: 0.5, opacity: 1 }}
+                        animate={{ scale: 2, opacity: 0 }}
+                        className="absolute inset-0 bg-error rounded-full -z-10"
+                    />
+                )}
+            </div>
+            <span className="font-medium text-sm">{count}</span>
+        </motion.button>
     );
 };
 

@@ -6,8 +6,10 @@ import PageAnimation from '../common/PageAnimation';
 import LikeButton from '../components/LikeButton';
 import SaveButton from '../components/SaveButton';
 import CommentsList from '../components/CommentsList';
-import { FiShare2 } from 'react-icons/fi';
+import { FiShare2, FiArrowLeft } from 'react-icons/fi';
 import ShareModal from '../components/ShareModal';
+import { motion } from 'framer-motion';
+import { DetailSkeleton } from './Skeleton';
 
 const PoemDetail = () => {
     const { id } = useParams();
@@ -47,24 +49,20 @@ const PoemDetail = () => {
         });
     };
 
-    const handleShare = () => {
-        setShareModalOpen(true);
-    };
-
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="spinner"></div>
+            <div className="max-w-3xl mx-auto pt-20 px-4">
+                <DetailSkeleton />
             </div>
         );
     }
 
     if (!poem) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-dark-bg">
-                <div className="text-center">
-                    <h2 className="text-2xl text-text-primary mb-4">Poem not found</h2>
-                    <Link to="/profile" className="text-accent hover:underline">
+            <div className="flex items-center justify-center min-h-[70vh]">
+                <div className="text-center glass-card p-12">
+                    <h2 className="text-2xl font-serif text-text-primary mb-4">Poem not found</h2>
+                    <Link to="/profile" className="btn-secondary">
                         Back to Feed
                     </Link>
                 </div>
@@ -74,104 +72,112 @@ const PoemDetail = () => {
 
     return (
         <PageAnimation>
-            <div className="bg-dark-bg min-h-screen">
-                <section className="py-8">
-                    <div className="mx-auto max-w-[900px] px-4">
-                        {/* Poem Card */}
-                        <div className="bg-card-bg rounded-xl border border-text-muted p-6 md:p-8 mb-8">
-                            {/* Header */}
-                            <div className="flex items-start justify-between mb-6">
-                                <div>
-                                    <Link
-                                        to={`/profile`}
-                                        className="text-accent text-sm font-medium hover:underline mb-2 block"
-                                    >
-                                        {poem.profiles?.username || 'Unknown Author'}
-                                    </Link>
-                                    <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-2">
-                                        {poem.title}
-                                    </h1>
-                                    <div className="flex items-center gap-4 text-sm text-text-secondary">
-                                        <span>Published {formatTime(poem.created_at)}</span>
-                                        <span className="text-text-muted">|</span>
-                                        <span className="bg-darker-bg px-2 py-1 rounded text-xs border border-text-muted">
-                                            {poem.category || 'general'}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        onClick={handleShare}
-                                        className="p-3 bg-darker-bg rounded-lg border border-text-muted text-text-primary hover:text-accent hover:border-accent transition"
-                                        title="Share"
-                                    >
-                                        <FiShare2 size={20} />
-                                    </button>
-                                </div>
+            <div className="pt-10 pb-20 px-4">
+                <div className="max-w-3xl mx-auto">
+                    {/* Top Navigation */}
+                    <div className="mb-12 flex items-center justify-between">
+                        <Link
+                            to="/profile"
+                            className="group flex items-center gap-2 text-text-secondary hover:text-accent transition-colors"
+                        >
+                            <div className="p-2 bg-glass border border-glass-border rounded-lg group-hover:border-accent/30 transition-all">
+                                <FiArrowLeft size={20} />
                             </div>
+                            <span className="font-medium">Back to Feed</span>
+                        </Link>
+                        
+                        <button
+                            onClick={() => setShareModalOpen(true)}
+                            className="btn-secondary !p-3 rounded-full"
+                            title="Share this stanza"
+                        >
+                            <FiShare2 size={20} />
+                        </button>
+                    </div>
 
-                            {/* Poem Content */}
-                            <div className="prose prose-invert max-w-none">
-                                <pre className="text-base md:text-lg leading-relaxed text-text-secondary whitespace-pre-wrap font-gelasio">
-                                    {poem.content}
-                                </pre>
-                            </div>
+                    {/* Poem Content */}
+                    <motion.article 
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="glass-card p-8 md:p-16 mb-12 relative overflow-hidden"
+                    >
+                        {/* Decorative Quote Mark */}
+                        <div className="absolute top-8 left-8 text-8xl font-serif text-accent/5 select-none leading-none">
+                            "
+                        </div>
 
-                            {/* Interaction Buttons */}
-                            <div className="flex items-center gap-6 mt-8 pt-6 border-t border-text-muted/30">
-                                <LikeButton
-                                    poemId={poem.id}
-                                    initialLiked={false}
-                                    initialCount={0}
-                                />
-                                <SaveButton
-                                    poemId={poem.id}
-                                    initialSaved={false}
-                                    initialCount={0}
-                                />
-                                <span className="text-text-secondary text-sm">
-                                    {poem.profiles?.username || 'Anonymous'}
+                        <header className="mb-12 text-center relative z-10">
+                            <div className="flex items-center justify-center gap-3 mb-6">
+                                <span className="category-badge">{poem.category || 'general'}</span>
+                                <span className="h-px w-8 bg-glass-border" />
+                                <span className="text-xs text-text-muted uppercase tracking-[0.2em]">
+                                    {formatTime(poem.created_at)}
                                 </span>
                             </div>
+                            
+                            <h1 className="poem-title !text-4xl md:!text-6xl mb-4 leading-tight">
+                                {poem.title}
+                            </h1>
+                            
+                            <p className="text-text-secondary font-serif italic text-lg">
+                                by <span className="text-accent underline underline-offset-8 decoration-accent/30">
+                                    {poem.profiles?.username || 'Anonymous'}
+                                </span>
+                            </p>
+                        </header>
+
+                        <div className="relative z-10">
+                            <pre className="poem-text text-center mx-auto max-w-prose">
+                                {poem.content}
+                            </pre>
                         </div>
 
-                        {/* Author Info */}
-                        {author && (
-                            <div className="mb-8">
-                                <h2 className="text-xl font-bold text-text-primary mb-4">About the Author</h2>
-                                <div className="flex items-center gap-4 p-4 bg-card-bg rounded-xl border border-text-muted">
-                                    <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold text-lg">
-                                        {author.username?.charAt(0).toUpperCase() || 'U'}
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="text-text-primary font-semibold">
-                                            {author.username || 'Anonymous'}
-                                        </h3>
-                                        <p className="text-text-secondary text-sm">
-                                            {author.bio || 'No bio available'}
-                                        </p>
-                                    </div>
-                                </div>
+                        <div className="mt-16 flex items-center justify-center gap-8 pt-8 border-t border-glass-border">
+                            <LikeButton
+                                poemId={poem.id}
+                                initialLiked={false}
+                                initialCount={0}
+                            />
+                            <div className="h-4 w-px bg-glass-border" />
+                            <SaveButton
+                                poemId={poem.id}
+                                initialSaved={false}
+                                initialCount={0}
+                            />
+                        </div>
+                    </motion.article>
+
+                    {/* Author Section */}
+                    {author && (
+                        <motion.div 
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            className="mb-16 p-8 glass-card flex flex-col md:flex-row items-center gap-8"
+                        >
+                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-accent to-accent-light flex items-center justify-center text-darker-bg font-serif text-4xl font-bold shadow-xl">
+                                {author.username?.charAt(0).toUpperCase() || 'U'}
                             </div>
-                        )}
+                            <div className="text-center md:text-left flex-1">
+                                <h2 className="text-2xl font-serif font-bold text-text-primary mb-2">
+                                    About {author.username || 'the Author'}
+                                </h2>
+                                <p className="text-text-secondary leading-relaxed italic">
+                                    {author.bio || 'This poet prefers to let their work speak for itself.'}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
 
-                        {/* Comments */}
-                        <CommentsList poemId={poem.id} />
-
-                        {/* Back Button */}
-                        <div className="mt-8">
-                            <Link
-                                to="/profile"
-                                className="inline-flex items-center gap-2 text-text-secondary hover:text-accent transition"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                                Back to Feed
-                            </Link>
+                    {/* Comments Section */}
+                    <div className="space-y-8">
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-2xl font-serif font-bold text-text-primary">Reflections</h2>
+                            <div className="h-px flex-1 bg-glass-border" />
                         </div>
+                        <CommentsList poemId={poem.id} />
                     </div>
-                </section>
+                </div>
 
                 {/* Share Modal */}
                 {shareModalOpen && (
