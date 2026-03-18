@@ -136,11 +136,13 @@ export const searchByAuthor = async (username) => {
 
 // Profile operations
 export const getCommentsForPoem = async (poemId) => {
+    if (!poemId || poemId === 'null') return [];
+
     const { data, error } = await supabase
         .from('comments')
         .select('*, profiles(username, avatar_url)')
         .eq('poem_id', poemId)
-        .eq('parent_comment_id', null)
+        .is('parent_comment_id', null)
         .order('created_at', { ascending: true });
 
     if (error) throw error;
