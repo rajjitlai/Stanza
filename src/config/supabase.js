@@ -78,7 +78,7 @@ export const deletePoem = async (id) => {
 export const getUserPoems = async (userId) => {
     const { data, error } = await supabase
         .from('poems')
-        .select('*')
+        .select('*, profiles(username, avatar_url)')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
     if (error) throw error;
@@ -128,6 +128,16 @@ export const getUserProfile = async (userId) => {
         .from('profiles')
         .select('*')
         .eq('id', userId)
+        .single();
+    if (error) throw error;
+    return data;
+};
+
+export const getUserProfileByUsername = async (username) => {
+    const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('username', username)
         .single();
     if (error) throw error;
     return data;

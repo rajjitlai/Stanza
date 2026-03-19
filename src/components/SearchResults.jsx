@@ -52,7 +52,7 @@ const SearchResults = () => {
                     <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-4">
                             <Link
-                                to="/profile"
+                                to="/feed"
                                 className="group flex items-center gap-2 text-text-secondary hover:text-accent transition-colors"
                             >
                                 <div className="p-2 bg-glass border border-glass-border rounded-lg group-hover:border-accent/30 transition-all">
@@ -155,7 +155,7 @@ const SearchResults = () => {
                                     >
                                         Clear Search
                                     </button>
-                                    <Link to="/profile" className="btn-primary">
+                                    <Link to="/feed" className="btn-primary">
                                         Back to Feed
                                     </Link>
                                 </div>
@@ -190,7 +190,7 @@ const SearchResults = () => {
                                                         </h3>
                                                     </Link>
                                                     <p className="text-sm text-text-secondary">
-                                                        by <span className="font-serif italic text-text-primary">@{poem.profiles?.username || 'anonymous'}</span>
+                                                        by <Link to={`/profile/${poem.profiles?.username || poem.user_id}`} className="font-serif italic text-text-primary hover:text-accent transition-colors">@{poem.profiles?.username || 'anonymous'}</Link>
                                                     </p>
                                                 </div>
                                             </div>

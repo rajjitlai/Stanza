@@ -1,9 +1,9 @@
 import { Link, Outlet, useNavigate } from "react-router-dom"
-import { FiMenu, FiX } from "react-icons/fi"
+import { FiMenu, FiX, FiUser } from "react-icons/fi"
 import { RiUserSettingsLine, RiFileEditLine } from "react-icons/ri"
 import { BiLogOut, BiSearch } from "react-icons/bi"
 import { useEffect, useState } from "react"
-import { getAuthSession, logout, getCurrentUser } from "../config/supabase"
+import { getAuthSession, logout, getCurrentUser, getUserProfile } from "../config/supabase"
 import toast from "react-hot-toast"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -11,7 +11,7 @@ const Navbar = () => {
     const navigate = useNavigate()
     const [searchToggle, setSearchToggle] = useState(false)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [userName, setUserName] = useState("")
+    const [userProfile, setUserProfile] = useState(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -21,9 +21,11 @@ const Navbar = () => {
                 const session = await getAuthSession()
                 if (session?.user) {
                     setIsAuthenticated(true)
-                    setUserName(session.user.email?.split('@')[0] || 'User')
+                    const profile = await getUserProfile(session.user.id)
+                    setUserProfile(profile)
                 } else {
                     setIsAuthenticated(false)
+                    setUserProfile(null)
                 }
             } catch (error) {
                 setIsAuthenticated(false)
@@ -37,6 +39,7 @@ const Navbar = () => {
             await logout()
             localStorage.removeItem('userId')
             setIsAuthenticated(false)
+            setUserProfile(null)
             toast.success('Logged out successfully!')
             navigate('/login')
         } catch (error) {
@@ -84,11 +87,17 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center gap-4">
                     {isAuthenticated ? (
                         <>
+                            <Link to="/feed" className="text-text-secondary hover:text-accent font-medium px-2 transition-colors">
+                                Feed
+                            </Link>
                             <Link to="/editor" className="btn-secondary !py-2 !px-4">
                                 <RiFileEditLine className="text-lg" />
                                 <span>Write</span>
                             </Link>
                             <div className="h-6 w-px bg-glass-border mx-2" />
+                            <Link to={`/profile/${userProfile?.username || localStorage.getItem('userId')}`} className="p-2 text-text-secondary hover:text-accent transition-colors" title="My Profile">
+                                <FiUser size={24} />
+                            </Link>
                             <Link to="/settings" className="p-2 text-text-secondary hover:text-accent transition-colors" title="Settings">
                                 <RiUserSettingsLine size={24} />
                             </Link>

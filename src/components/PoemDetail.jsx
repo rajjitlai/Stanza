@@ -62,7 +62,7 @@ const PoemDetail = () => {
             <div className="flex items-center justify-center min-h-[70vh]">
                 <div className="text-center glass-card p-12">
                     <h2 className="text-2xl font-serif text-text-primary mb-4">Poem not found</h2>
-                    <Link to="/profile" className="btn-secondary">
+                    <Link to="/feed" className="btn-secondary">
                         Back to Feed
                     </Link>
                 </div>
@@ -77,7 +77,7 @@ const PoemDetail = () => {
                     {/* Top Navigation */}
                     <div className="mb-12 flex items-center justify-between">
                         <Link
-                            to="/profile"
+                            to="/feed"
                             className="group flex items-center gap-2 text-text-secondary hover:text-accent transition-colors"
                         >
                             <div className="p-2 bg-glass border border-glass-border rounded-lg group-hover:border-accent/30 transition-all">
@@ -120,9 +120,9 @@ const PoemDetail = () => {
                             </h1>
                             
                             <p className="text-text-secondary font-serif italic text-lg">
-                                by <span className="text-accent underline underline-offset-8 decoration-accent/30">
+                                by <Link to={`/profile/${poem.profiles?.username || poem.user_id}`} className="text-accent underline underline-offset-8 decoration-accent/30 hover:text-accent-light transition-colors">
                                     {poem.profiles?.username || 'Anonymous'}
-                                </span>
+                                </Link>
                             </p>
                         </header>
 
@@ -149,24 +149,29 @@ const PoemDetail = () => {
 
                     {/* Author Section */}
                     {author && (
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            className="mb-16 p-8 glass-card flex flex-col md:flex-row items-center gap-8"
-                        >
-                            <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-accent to-accent-light flex items-center justify-center text-darker-bg font-serif text-4xl font-bold shadow-xl">
-                                {author.username?.charAt(0).toUpperCase() || 'U'}
-                            </div>
-                            <div className="text-center md:text-left flex-1">
-                                <h2 className="text-2xl font-serif font-bold text-text-primary mb-2">
-                                    About {author.username || 'the Author'}
-                                </h2>
-                                <p className="text-text-secondary leading-relaxed italic">
-                                    {author.bio || 'This poet prefers to let their work speak for itself.'}
-                                </p>
-                            </div>
-                        </motion.div>
+                        <Link to={`/profile/${author.username || poem.user_id}`} className="block transition-transform hover:-translate-y-1">
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                viewport={{ once: true }}
+                                className="mb-16 p-8 glass-card flex flex-col md:flex-row items-center gap-8 group"
+                            >
+                                <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-accent to-accent-light flex items-center justify-center text-darker-bg font-serif text-4xl font-bold shadow-xl group-hover:shadow-accent-glow transition-all">
+                                    {author.username?.charAt(0).toUpperCase() || 'U'}
+                                </div>
+                                <div className="text-center md:text-left flex-1">
+                                    <h2 className="text-2xl font-serif font-bold text-text-primary mb-2 group-hover:text-accent transition-colors">
+                                        About {author.username || 'the Author'}
+                                    </h2>
+                                    <p className="text-text-secondary leading-relaxed italic">
+                                        {author.bio || 'This poet prefers to let their work speak for itself.'}
+                                    </p>
+                                    <div className="mt-4 text-accent text-sm font-medium flex items-center justify-center md:justify-start gap-2">
+                                        View full profile <span className="text-lg">→</span>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </Link>
                     )}
 
                     {/* Comments Section */}

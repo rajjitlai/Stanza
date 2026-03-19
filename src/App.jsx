@@ -1,7 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import Navbar from "./components/Navbar"
 import AuthForm from "./auth/AuthForm"
-import Profile from "./shared/Profile"
+import Feed from "./shared/Feed"
+import PublicProfile from "./shared/PublicProfile"
 import { Toaster } from "react-hot-toast"
 import PrivateRoute from "./auth/PrivateRoute"
 import PublicRoute from "./auth/PublicRoute"
@@ -12,6 +13,7 @@ import PoemDetail from "./components/PoemDetail"
 import SearchResults from "./components/SearchResults"
 import AdminDashboard from "./admin/Dashboard"
 import LandingPage from "./components/LandingPage"
+import NotFound from "./components/NotFound"
 
 const App = () => {
   return (
@@ -47,7 +49,8 @@ const App = () => {
         {/* Main Layout with Navbar (Accessible to all) */}
         <Route path="/" element={<Navbar />}>
           <Route index element={<LandingPage />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="feed" element={<Feed />} />
+          <Route path="profile/:username" element={<PublicProfile />} />
           <Route path="poem/:id" element={<PoemDetail />} />
           <Route path="search" element={<SearchResults />} />
           
@@ -66,7 +69,7 @@ const App = () => {
           </Route>
         </Route>
 
-        <Route path="*" element={<h1 className="text-center p-10">404 Page not found</h1>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   )

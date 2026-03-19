@@ -7,7 +7,7 @@ import { RiDeleteBin6Line, RiPencilLine, RiSearchLine, RiQuillPenLine } from "re
 import { motion, AnimatePresence } from "framer-motion"
 import { CardSkeleton } from "../components/Skeleton"
 
-const Profile = () => {
+const Feed = () => {
     const [poems, setPoems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [filter, setFilter] = useState("all") // "all" or "mine"
@@ -165,7 +165,7 @@ const Profile = () => {
                                                         </h3>
                                                     </Link>
                                                     <p className="text-sm text-text-secondary">
-                                                        by <span className="font-serif italic text-text-primary">@{poem.profiles?.username || 'anonymous'}</span>
+                                                        by <Link to={`/profile/${poem.profiles?.username || poem.user_id}`} className="font-serif italic text-text-primary hover:text-accent transition-colors">@{poem.profiles?.username || 'anonymous'}</Link>
                                                     </p>
                                                 </div>
                                                 
@@ -209,4 +209,4 @@ const Profile = () => {
     )
 }
 
-export default Profile
+export default Feed
