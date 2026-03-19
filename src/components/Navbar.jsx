@@ -41,7 +41,7 @@ const Navbar = () => {
             setIsAuthenticated(false)
             setUserProfile(null)
             toast.success('Logged out successfully!')
-            navigate('/login')
+            window.location.href = '/login'
         } catch (error) {
             toast.error(`Logout failed: ${error.message}`)
         }

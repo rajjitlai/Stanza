@@ -22,7 +22,7 @@ const PublicRoute = () => {
         return <div className="flex items-center justify-center h-screen">Loading...</div>;
     }
 
-    return isAuthenticated ? <Navigate to="/profile" /> : <Outlet />;
+    return isAuthenticated ? <Navigate to="/feed" /> : <Outlet />;
 };
 
 export default PublicRoute;

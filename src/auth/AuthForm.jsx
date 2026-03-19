@@ -58,9 +58,12 @@ const AuthForm = ({ type = "login" }) => {
                 toast.success('Signup successful! Please log in.');
                 navigate('/login');
             } else {
-                await loginWithEmail(email, password);
+                const { user } = await loginWithEmail(email, password);
+                if (user) {
+                    localStorage.setItem('userId', user.id);
+                }
                 toast.success('Login successful!');
-                navigate('/profile');
+                window.location.href = '/feed';
             }
         } catch (error) {
             toast.error(`Error: ${error.message}`);

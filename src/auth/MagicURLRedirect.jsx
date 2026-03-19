@@ -14,12 +14,12 @@ const AuthRedirect = () => {
         const type = urlParams.get('type'); // e.g., 'recovery', 'invite', 'signup'
 
         if (!type) {
-            navigate('/profile');
+            window.location.href = '/feed';
             return;
         }
 
         toast.success('Authentication processed!');
-        navigate('/profile');
+        window.location.href = '/feed';
     }, [navigate]);
 
     return (

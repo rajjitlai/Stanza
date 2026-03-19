@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link } from "react-router-dom"
-import { getUserPoems, getAllPoems, deletePoem } from "../config/supabase"
+import { getUserPoems, getAllPoems, deletePoem, getAuthSession } from "../config/supabase"
 import toast from "react-hot-toast"
 import PageAnimation from "../common/PageAnimation"
 import { RiDeleteBin6Line, RiPencilLine, RiSearchLine, RiQuillPenLine } from "react-icons/ri"
@@ -12,13 +12,39 @@ const Feed = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [filter, setFilter] = useState("all") // "all" or "mine"
     const [searchTerm, setSearchTerm] = useState("")
-    const userId = localStorage.getItem("userId")
+    const [userId, setUserId] = useState(() => {
+        const id = localStorage.getItem("userId")
+        return id === "null" ? null : id
+    })
+
+    useEffect(() => {
+        const fetchUserId = async () => {
+            if (!userId || userId === "null") {
+                try {
+                    const session = await getAuthSession()
+                    if (session?.user) {
+                        setUserId(session.user.id)
+                        localStorage.setItem("userId", session.user.id)
+                    }
+                } catch (error) {
+                    console.error("Error fetching session:", error)
+                }
+            }
+        }
+        fetchUserId()
+    }, [userId])
 
     const loadPoems = useCallback(async () => {
         setIsLoading(true)
         try {
             let data
             if (filter === "mine") {
+                if (!userId) {
+                    toast.error("You need to be logged in to view your stanzas.")
+                    setFilter("all")
+                    setIsLoading(false)
+                    return
+                }
                 data = await getUserPoems(userId)
             } else {
                 data = await getAllPoems()

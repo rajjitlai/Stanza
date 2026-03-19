@@ -37,7 +37,7 @@ const LandingPage = () => {
                             <Link to="/signup" className="btn-primary !py-4 !px-10 text-lg shadow-2xl">
                                 Start Your Journey
                             </Link>
-                            <Link to="/login" className="btn-secondary !py-4 !px-10 text-lg">
+                            <Link to="/feed" className="btn-secondary !py-4 !px-10 text-lg">
                                 Explore Feed
                             </Link>
                         </div>
