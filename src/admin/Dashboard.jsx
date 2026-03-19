@@ -76,20 +76,20 @@ const AdminDashboard = () => {
         <PageAnimation>
             <div className="max-w-6xl mx-auto pt-10 pb-20 px-4">
                 {/* Header */}
-                <header className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 glass-card p-8">
-                    <div className="flex items-center gap-4 text-text-primary">
+                <header className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8 md:mb-12 glass-card p-6 md:p-8 text-center md:text-left">
+                    <div className="flex flex-col md:flex-row items-center gap-4 text-text-primary">
                         <div className="p-3 bg-accent/20 text-accent rounded-2xl border border-accent/20">
                             <RiDashboardLine size={32} />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-serif font-bold">Admin Sanctum</h1>
-                            <p className="text-sm text-text-secondary italic uppercase tracking-widest">Platform Oversight & Care</p>
+                            <h1 className="text-2xl md:text-3xl font-serif font-bold">Admin Sanctum</h1>
+                            <p className="text-xs text-text-secondary italic uppercase tracking-widest">Platform Oversight & Care</p>
                         </div>
                     </div>
                 </header>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
                     {[
                         { label: 'Total Stanzas', value: stats.totalPoems, icon: <RiQuillPenLine />, color: 'text-accent' },
                         { label: 'Total Poets', value: stats.totalUsers, icon: <RiUserLine />, color: 'text-blue-400' },
@@ -101,23 +101,23 @@ const AdminDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className="glass-card p-6 border-l-4 border-l-accent/20"
+                            className="glass-card p-5 md:p-6 border-l-4 border-l-accent/20"
                         >
                             <div className="flex items-center justify-between mb-4">
                                 <span className={`text-2xl ${stat.color}`}>{stat.icon}</span>
-                                <span className="text-xs font-bold text-text-muted uppercase tracking-widest">Metrics</span>
+                                <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Metrics</span>
                             </div>
-                            <div className="text-3xl font-bold text-text-primary mb-1">{stat.value}</div>
-                            <div className="text-xs text-text-secondary uppercase tracking-widest font-medium">{stat.label}</div>
+                            <div className="text-2xl md:text-3xl font-bold text-text-primary mb-1">{stat.value}</div>
+                            <div className="text-[10px] md:text-xs text-text-secondary uppercase tracking-widest font-medium">{stat.label}</div>
                         </motion.div>
                     ))}
                 </div>
 
                 {/* Navigation Tabs */}
-                <div className="flex gap-4 p-1 bg-glass border border-glass-border rounded-2xl w-fit mb-8">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 p-1 bg-glass border border-glass-border rounded-2xl w-full sm:w-fit mb-8">
                     <button
                         onClick={() => setActiveTab('poems')}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all ${
+                        className={`px-6 md:px-8 py-2.5 md:py-3 rounded-xl font-bold transition-all text-sm md:text-base ${
                             activeTab === 'poems'
                                 ? 'bg-accent text-darker-bg shadow-lg shadow-accent/20'
                                 : 'text-text-secondary hover:text-text-primary'
@@ -127,7 +127,7 @@ const AdminDashboard = () => {
                     </button>
                     <button
                         onClick={() => setActiveTab('users')}
-                        className={`px-8 py-3 rounded-xl font-bold transition-all ${
+                        className={`px-6 md:px-8 py-2.5 md:py-3 rounded-xl font-bold transition-all text-sm md:text-base ${
                             activeTab === 'users'
                                 ? 'bg-accent text-darker-bg shadow-lg shadow-accent/20'
                                 : 'text-text-secondary hover:text-text-primary'
@@ -146,18 +146,19 @@ const AdminDashboard = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="p-20 flex flex-col items-center justify-center"
+                                className="p-12 md:p-20 flex flex-col items-center justify-center"
                             >
                                 <div className="spinner mb-4" />
-                                <p className="text-text-muted italic">Gathering records...</p>
+                                <p className="text-text-muted italic text-sm">Gathering records...</p>
                             </motion.div>
                         ) : (
-                            <motion.div 
-                                key={activeTab}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="overflow-x-auto"
-                            >
+                            <div className="overflow-x-auto">
+                                <motion.div 
+                                    key={activeTab}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="min-w-[600px] md:min-w-full"
+                                >
                                 {activeTab === 'poems' ? (
                                     <table className="w-full text-left">
                                         <thead>
@@ -229,7 +230,8 @@ const AdminDashboard = () => {
                                     </table>
                                 )}
                             </motion.div>
-                        )}
+                        </div>
+                    )}
                     </AnimatePresence>
                 </div>
             </div>

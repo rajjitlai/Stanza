@@ -49,8 +49,8 @@ const SearchResults = () => {
             <div className="pt-10 pb-20 px-4">
                 <div className="max-w-5xl mx-auto">
                     {/* Header & Back Button */}
-                    <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-4">
+                    <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                             <Link
                                 to="/feed"
                                 className="group flex items-center gap-2 text-text-secondary hover:text-accent transition-colors"
@@ -58,15 +58,15 @@ const SearchResults = () => {
                                 <div className="p-2 bg-glass border border-glass-border rounded-lg group-hover:border-accent/30 transition-all">
                                     <FiArrowLeft size={20} />
                                 </div>
-                                <span className="font-medium">Back to Feed</span>
+                                <span className="font-medium text-sm sm:text-base">Back to Feed</span>
                             </Link>
-                            <div className="h-8 w-px bg-glass-border hidden md:block" />
-                            <h1 className="text-3xl font-serif font-bold text-text-primary">
+                            <div className="h-8 w-px bg-glass-border hidden sm:block" />
+                            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-text-primary">
                                 Search Results
                             </h1>
                         </div>
                         
-                        <div className="text-sm text-text-muted uppercase tracking-widest font-medium bg-glass border border-glass-border px-4 py-2 rounded-full">
+                        <div className="text-xs sm:text-sm text-text-muted uppercase tracking-widest font-medium bg-glass border border-glass-border px-4 py-2 rounded-full w-fit">
                             Found {results.length} stanza{results.length !== 1 ? 's' : ''}
                         </div>
                     </div>
@@ -75,7 +75,7 @@ const SearchResults = () => {
                     <motion.div 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="glass-card p-2 mb-12 flex flex-col md:flex-row gap-2"
+                        className="glass-card p-2 mb-8 md:mb-12 flex flex-col md:flex-row gap-2"
                     >
                         <form onSubmit={handleSearch} className="flex-1 flex flex-col md:flex-row gap-2">
                             <div className="relative flex-1">
@@ -84,8 +84,8 @@ const SearchResults = () => {
                                     type="text"
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    placeholder="Search by title, author, or content..."
-                                    className="w-full bg-transparent border-none py-3.5 pl-12 pr-4 outline-none text-text-primary placeholder:text-text-muted/50"
+                                    placeholder="Search poems..."
+                                    className="w-full bg-transparent border-none py-3.5 pl-12 pr-4 outline-none text-text-primary placeholder:text-text-muted/50 text-sm sm:text-base"
                                 />
                             </div>
                             
@@ -99,7 +99,7 @@ const SearchResults = () => {
                                         setCategory(e.target.value);
                                         performSearch(query, e.target.value);
                                     }}
-                                    className="w-full md:w-48 bg-transparent border-none py-3.5 pl-12 pr-8 outline-none text-text-primary appearance-none capitalize cursor-pointer font-medium"
+                                    className="w-full md:w-48 bg-transparent border-none py-3.5 pl-12 pr-8 outline-none text-text-primary appearance-none capitalize cursor-pointer font-medium text-sm sm:text-base"
                                 >
                                     {categories.map(cat => (
                                         <option key={cat} value={cat} className="bg-darker-bg text-text-primary">
@@ -111,7 +111,7 @@ const SearchResults = () => {
 
                             <button
                                 type="submit"
-                                className="btn-primary !py-3.5 justify-center px-8"
+                                className="btn-primary !py-3.5 justify-center px-8 text-sm sm:text-base"
                             >
                                 Update Search
                             </button>
@@ -126,7 +126,7 @@ const SearchResults = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="grid gap-8"
+                                className="grid gap-6 md:gap-8"
                             >
                                 {[1, 2].map(i => <CardSkeleton key={i} />)}
                             </motion.div>
@@ -135,27 +135,27 @@ const SearchResults = () => {
                                 key="no-results"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="text-center py-20 glass-card"
+                                className="text-center py-12 md:py-20 glass-card p-6"
                             >
-                                <div className="w-20 h-20 bg-glass border border-glass-border rounded-full flex items-center justify-center mx-auto mb-6 text-text-muted/30">
-                                    <FiSearch size={40} />
+                                <div className="w-16 h-16 md:w-20 md:h-20 bg-glass border border-glass-border rounded-full flex items-center justify-center mx-auto mb-6 text-text-muted/30">
+                                    <FiSearch size={32} className="md:w-10 md:h-10" />
                                 </div>
-                                <h3 className="text-2xl font-serif font-bold text-text-primary mb-3">No stanzas found</h3>
-                                <p className="text-text-secondary max-w-sm mx-auto mb-8 italic">
+                                <h3 className="text-xl md:text-2xl font-serif font-bold text-text-primary mb-3">No stanzas found</h3>
+                                <p className="text-sm md:text-base text-text-secondary max-w-sm mx-auto mb-8 italic">
                                     "Sometimes the most beautiful poems are the ones yet to be found."
                                 </p>
-                                <div className="flex justify-center gap-4">
+                                <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
                                     <button 
                                         onClick={() => {
                                             setQuery('');
                                             setCategory('all');
                                             performSearch('', 'all');
                                         }}
-                                        className="btn-secondary"
+                                        className="btn-secondary justify-center text-sm md:text-base"
                                     >
                                         Clear Search
                                     </button>
-                                    <Link to="/feed" className="btn-primary">
+                                    <Link to="/feed" className="btn-primary justify-center text-sm md:text-base">
                                         Back to Feed
                                     </Link>
                                 </div>
@@ -165,7 +165,7 @@ const SearchResults = () => {
                                 key="results"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="grid gap-8"
+                                className="grid gap-6 md:gap-8"
                             >
                                 {results.map((poem, index) => (
                                     <motion.div
@@ -175,17 +175,17 @@ const SearchResults = () => {
                                         transition={{ delay: index * 0.05 }}
                                         className="glass-card group hover-lift overflow-hidden"
                                     >
-                                        <div className="p-8">
+                                        <div className="p-6 md:p-8">
                                             <div className="flex justify-between items-start mb-6">
                                                 <div className="space-y-2">
-                                                    <div className="flex items-center gap-3">
+                                                    <div className="flex items-center flex-wrap gap-3">
                                                         <span className="category-badge">{poem.category || "general"}</span>
-                                                        <span className="text-xs text-text-muted uppercase tracking-widest">
+                                                        <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">
                                                             {new Date(poem.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                                         </span>
                                                     </div>
                                                     <Link to={`/poem/${poem.id}`}>
-                                                        <h3 className="poem-title group-hover:text-accent transition-colors !text-2xl">
+                                                        <h3 className="text-xl sm:text-2xl font-serif font-bold group-hover:text-accent transition-colors leading-tight">
                                                             {poem.title}
                                                         </h3>
                                                     </Link>
@@ -196,17 +196,17 @@ const SearchResults = () => {
                                             </div>
 
                                             <div className="relative">
-                                                <p className="poem-text line-clamp-3 italic text-text-secondary/80 !text-base leading-relaxed">
+                                                <p className="poem-text line-clamp-3 italic text-text-secondary/80 !text-sm sm:!text-base leading-relaxed">
                                                     {poem.content}
                                                 </p>
                                                 <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-card-bg to-transparent" />
                                             </div>
 
-                                            <div className="mt-8 flex items-center justify-between">
-                                                <Link to={`/poem/${poem.id}`} className="text-accent font-medium flex items-center gap-2 hover:gap-3 transition-all">
+                                            <div className="mt-6 md:mt-8 flex items-center justify-between">
+                                                <Link to={`/poem/${poem.id}`} className="text-accent font-medium flex items-center gap-2 hover:gap-3 transition-all text-sm md:text-base">
                                                     Read full stanza <span className="text-lg">→</span>
                                                 </Link>
-                                                <div className="flex items-center gap-4 text-text-muted text-sm">
+                                                <div className="flex items-center gap-4 text-text-muted text-[10px] sm:text-sm">
                                                     <span>{Math.ceil(poem.content.split(' ').length / 200)} min read</span>
                                                 </div>
                                             </div>

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiShare2, FiCheck, FiCopy, FiTwitter, FiFacebook, FiLink } from 'react-icons/fi';
+import { FiShare2, FiCheck, FiCopy, FiTwitter, FiFacebook, FiLink, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ShareModal = ({ poemId, poemTitle, onClose }) => {
     const [showCopied, setShowCopied] = useState(false);
@@ -39,7 +40,7 @@ const ShareModal = ({ poemId, poemTitle, onClose }) => {
     };
 
     const shareTwitter = () => {
-        const text = encodeURIComponent(`Check out this poem: ${poemTitle}`);
+        const text = encodeURIComponent(`Check out this stanza: "${poemTitle}" on Stanza`);
         const url = encodeURIComponent(window.location.href);
         window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
     };
@@ -50,60 +51,85 @@ const ShareModal = ({ poemId, poemTitle, onClose }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div ref={modalRef} className="bg-card-bg border border-text-muted rounded-xl max-w-md w-full p-6 shadow-2xl">
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-xl font-bold text-text-primary">Share Poem</h3>
-                    <button
-                        onClick={onClose}
-                        className="text-text-muted hover:text-text-primary transition"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                    </button>
-                </div>
-
-                <div className="space-y-4">
-                    <p className="text-text-secondary mb-4">Share this poem with your friends:</p>
-
-                    {/* Copy Link */}
-                    <button
-                        onClick={copyLink}
-                        className="w-full flex items-center justify-between p-4 bg-darker-bg rounded-lg border border-text-muted hover:border-accent/50 transition group"
-                    >
+        <div className="fixed inset-0 bg-darker-bg/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                ref={modalRef} 
+                className="glass-card max-w-md w-full p-6 md:p-8 relative overflow-hidden"
+            >
+                {/* Decorative Background */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full" />
+                
+                <div className="relative z-10">
+                    <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${showCopied ? 'bg-green-500/20 text-green-500' : 'bg-accent/20 text-accent'}`}>
-                                {showCopied ? <FiCheck size={20} /> : <FiLink size={20} />}
+                            <div className="p-2 bg-accent/20 text-accent rounded-xl">
+                                <FiShare2 size={24} />
                             </div>
-                            <span className="text-text-primary font-medium">Copy Link</span>
+                            <h3 className="text-xl md:text-2xl font-serif font-bold text-text-primary">Share Stanza</h3>
                         </div>
-                        {showCopied && <span className="text-green-500 text-sm">Copied!</span>}
-                    </button>
-
-                    {/* Social Sharing */}
-                    <div className="grid grid-cols-2 gap-3">
                         <button
-                            onClick={shareTwitter}
-                            className="flex items-center justify-center gap-2 p-3 bg-[#1DA1F2]/10 hover:bg-[#1DA1F2]/20 rounded-lg transition group"
+                            onClick={onClose}
+                            className="p-2 text-text-muted hover:text-text-primary hover:bg-glass rounded-xl transition-all"
                         >
-                            <FiTwitter className="text-[#1DA1F2] group-hover:scale-110 transition" size={20} />
-                            <span className="text-[#1DA1F2] font-medium">Twitter</span>
-                        </button>
-                        <button
-                            onClick={shareFacebook}
-                            className="flex items-center justify-center gap-2 p-3 bg-[#1877F2]/10 hover:bg-[#1877F2]/20 rounded-lg transition group"
-                        >
-                            <FiFacebook className="text-[#1877F2] group-hover:scale-110 transition" size={20} />
-                            <span className="text-[#1877F2] font-medium">Facebook</span>
+                            <FiX size={24} />
                         </button>
                     </div>
-                </div>
 
-                <div className="mt-6 pt-4 border-t border-text-muted text-center">
-                    <p className="text-xs text-text-muted">
-                        Share the poetry! 🖋️
-                    </p>
+                    <div className="space-y-6">
+                        <p className="text-text-secondary italic font-serif">
+                            Spread the rhythm. Share this masterpiece with the world.
+                        </p>
+
+                        {/* Copy Link Section */}
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Universal Link</label>
+                            <div className="flex gap-2">
+                                <div className="flex-1 bg-darker-bg/50 border border-glass-border rounded-xl px-4 py-3 text-sm text-text-muted truncate font-mono">
+                                    {window.location.href}
+                                </div>
+                                <button
+                                    onClick={copyLink}
+                                    className={`p-3 rounded-xl border transition-all duration-300 ${
+                                        showCopied 
+                                        ? 'bg-green-500/10 border-green-500/30 text-green-500' 
+                                        : 'bg-accent/10 border-accent/20 text-accent hover:bg-accent hover:text-darker-bg shadow-accent-glow'
+                                    }`}
+                                    title="Copy to clipboard"
+                                >
+                                    {showCopied ? <FiCheck size={20} /> : <FiCopy size={20} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Social Buttons */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <button
+                                onClick={shareTwitter}
+                                className="flex items-center justify-center gap-3 p-4 bg-glass border border-glass-border hover:border-[#1DA1F2]/50 hover:bg-[#1DA1F2]/5 rounded-2xl transition-all group"
+                            >
+                                <FiTwitter className="text-[#1DA1F2] group-hover:scale-110 transition-transform" size={24} />
+                                <span className="font-medium text-[#1DA1F2]">Twitter</span>
+                            </button>
+                            <button
+                                onClick={shareFacebook}
+                                className="flex items-center justify-center gap-3 p-4 bg-glass border border-glass-border hover:border-[#1877F2]/50 hover:bg-[#1877F2]/5 rounded-2xl transition-all group"
+                            >
+                                <FiFacebook className="text-[#1877F2] group-hover:scale-110 transition-transform" size={24} />
+                                <span className="font-medium text-[#1877F2]">Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-glass-border text-center">
+                        <p className="text-xs text-text-muted font-serif italic">
+                            "Poetry is the rhythmical creation of beauty in words."
+                        </p>
+                    </div>
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };

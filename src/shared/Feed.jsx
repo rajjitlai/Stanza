@@ -86,16 +86,16 @@ const Feed = () => {
             <section className="px-4 md:px-[7vw] lg:px-[10vw] pb-20">
                 <div className="max-w-5xl mx-auto">
                     {/* Hero Section */}
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
                         <div>
-                            <h1 className="text-4xl md:text-5xl font-serif font-bold text-text-primary mb-2">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-text-primary mb-2">
                                 Poetry Feed
                             </h1>
-                            <p className="text-text-secondary italic">
+                            <p className="text-text-secondary italic text-sm sm:text-base">
                                 "Poetry is the rhythmical creation of beauty in words." — Edgar Allan Poe
                             </p>
                         </div>
-                        <Link to="/editor" className="btn-primary group">
+                        <Link to="/editor" className="btn-primary group w-full sm:w-auto justify-center">
                             <RiQuillPenLine className="text-xl group-hover:rotate-12 transition-transform" />
                             Write a Stanza
                         </Link>
@@ -106,7 +106,7 @@ const Feed = () => {
                         <div className="flex p-1 bg-darker-bg/50 rounded-xl w-full md:w-auto">
                             <button
                                 onClick={() => setFilter("all")}
-                                className={`flex-1 md:flex-none px-6 py-2 rounded-lg font-medium transition-all ${filter === "all"
+                                className={`flex-1 md:flex-none px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-medium transition-all ${filter === "all"
                                     ? "bg-accent text-darker-bg shadow-lg"
                                     : "text-text-secondary hover:text-text-primary"
                                     }`}
@@ -115,7 +115,7 @@ const Feed = () => {
                             </button>
                             <button
                                 onClick={() => setFilter("mine")}
-                                className={`flex-1 md:flex-none px-6 py-2 rounded-lg font-medium transition-all ${filter === "mine"
+                                className={`flex-1 md:flex-none px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base font-medium transition-all ${filter === "mine"
                                     ? "bg-accent text-darker-bg shadow-lg"
                                     : "text-text-secondary hover:text-text-primary"
                                     }`}
@@ -128,7 +128,7 @@ const Feed = () => {
                             <RiSearchLine className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                             <input
                                 type="text"
-                                placeholder="Search by title, author, or theme..."
+                                placeholder="Search poems..."
                                 className="w-full bg-transparent border-none py-3 pl-12 pr-4 outline-none text-text-primary placeholder:text-text-muted/60"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -166,7 +166,7 @@ const Feed = () => {
                             <motion.div 
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="grid gap-8"
+                                className="grid gap-6 md:gap-8"
                             >
                                 {filteredPoems.map((poem, index) => (
                                     <motion.div
@@ -176,17 +176,17 @@ const Feed = () => {
                                         transition={{ delay: index * 0.05 }}
                                         className="glass-card group hover-lift overflow-hidden"
                                     >
-                                        <div className="p-8">
+                                        <div className="p-6 md:p-8">
                                             <div className="flex justify-between items-start mb-6">
                                                 <div className="space-y-2">
-                                                    <div className="flex items-center gap-3">
+                                                    <div className="flex items-center flex-wrap gap-3">
                                                         <span className="category-badge">{poem.category || "general"}</span>
-                                                        <span className="text-xs text-text-muted uppercase tracking-widest">
+                                                        <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-widest">
                                                             {new Date(poem.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                                         </span>
                                                     </div>
                                                     <Link to={`/poem/${poem.id}`}>
-                                                        <h3 className="poem-title group-hover:text-accent transition-colors">
+                                                        <h3 className="text-2xl sm:text-3xl font-serif font-bold group-hover:text-accent transition-colors leading-tight">
                                                             {poem.title}
                                                         </h3>
                                                     </Link>

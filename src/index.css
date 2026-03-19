@@ -21,7 +21,7 @@
   }
 
   .nav-glass {
-    @apply sticky top-4 z-50 mx-4 md:mx-[7vw] lg:mx-[10vw] flex items-center justify-between p-4 glass-card;
+    @apply sticky top-4 z-50 mx-4 sm:mx-[5vw] md:mx-[7vw] lg:mx-[10vw] flex items-center justify-between p-3 md:p-4 glass-card;
   }
 
   .btn-primary {

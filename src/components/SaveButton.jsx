@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toggleSave } from '../config/saved';
 import toast from 'react-hot-toast';
 import { RiBookmarkFill, RiBookmarkLine } from 'react-icons/ri';
@@ -10,6 +10,12 @@ const SaveButton = ({ poemId, initialSaved = false, initialCount = 0 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const userId = localStorage.getItem('userId');
 
+    // Sync state with props if they change
+    useEffect(() => {
+        setSaved(initialSaved);
+        setCount(initialCount);
+    }, [initialSaved, initialCount]);
+
     const handleSave = async () => {
         if (!userId) {
             toast.error('Please log in to save poems');
@@ -17,11 +23,20 @@ const SaveButton = ({ poemId, initialSaved = false, initialCount = 0 }) => {
         }
 
         setIsLoading(true);
+        // Optimistic update
+        const prevSaved = saved;
+        const prevCount = count;
+        setSaved(!prevSaved);
+        setCount(prev => !prevSaved ? prev + 1 : prev - 1);
+
         try {
-            const newSavedState = await toggleSave(userId, poemId, saved);
+            const newSavedState = await toggleSave(userId, poemId, prevSaved);
+            // Confirm state from server
             setSaved(newSavedState);
-            setCount(prev => newSavedState ? prev + 1 : prev - 1);
         } catch (error) {
+            // Revert on error
+            setSaved(prevSaved);
+            setCount(prevCount);
             toast.error(`Failed to save poem: ${error.message}`);
         } finally {
             setIsLoading(false);

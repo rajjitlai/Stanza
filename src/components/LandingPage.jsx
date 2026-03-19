@@ -23,21 +23,21 @@ const LandingPage = () => {
                             <span>Unleash your inner poet</span>
                         </div>
                         
-                        <h1 className="text-5xl md:text-7xl font-serif font-bold text-text-primary leading-tight max-w-4xl mx-auto">
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold text-text-primary leading-tight max-w-4xl mx-auto">
                             Where every verse finds <br />
                             <span className="text-accent italic">its eternal rhythm.</span>
                         </h1>
                         
-                        <p className="text-xl text-text-secondary max-w-2xl mx-auto font-serif italic leading-relaxed">
+                        <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto font-serif italic leading-relaxed">
                             Join a global community of writers and dreamers. Share your stanzas, 
                             discover new perspectives, and keep the art of poetry alive.
                         </p>
                         
-                        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-8">
-                            <Link to="/signup" className="btn-primary !py-4 !px-10 text-lg shadow-2xl">
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 pt-8">
+                            <Link to="/signup" className="btn-primary w-full sm:w-auto !py-4 !px-10 text-lg shadow-2xl justify-center">
                                 Start Your Journey
                             </Link>
-                            <Link to="/feed" className="btn-secondary !py-4 !px-10 text-lg">
+                            <Link to="/feed" className="btn-secondary w-full sm:w-auto !py-4 !px-10 text-lg justify-center">
                                 Explore Feed
                             </Link>
                         </div>

@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from "react-router-dom"
 import { FiMenu, FiX, FiUser } from "react-icons/fi"
-import { RiUserSettingsLine, RiFileEditLine } from "react-icons/ri"
+import { RiUserSettingsLine, RiFileEditLine, RiQuillPenLine } from "react-icons/ri"
 import { BiLogOut, BiSearch } from "react-icons/bi"
 import { useEffect, useState } from "react"
 import { getAuthSession, logout, getCurrentUser, getUserProfile } from "../config/supabase"
@@ -133,7 +133,7 @@ const Navbar = () => {
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-2 text-text-secondary hover:text-accent"
                     >
-                        <FiMenu size={24} />
+                        {mobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
                     </button>
                 </div>
 
@@ -144,21 +144,136 @@ const Navbar = () => {
                             initial={{ opacity: 0, y: -20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            className="absolute top-full left-0 right-0 mt-4 mx-0 md:hidden p-4 glass-card"
+                            className="absolute top-full left-0 right-0 mt-4 mx-0 md:hidden p-4 border border-glass-border rounded-2xl z-[60]"
+                            style={{ backgroundColor: '#050508' }}
                         >
-                            <input
-                                autoFocus
-                                type="text"
-                                placeholder="Search poems..."
-                                className="input-field"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onKeyDown={handleSearch}
-                            />
+                            <div className="relative">
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Search poems..."
+                                    className="input-field"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onKeyDown={handleSearch}
+                                />
+                                <BiSearch className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted text-lg" />
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
+
             </nav>
+
+            {/* Mobile Menu Full Overlay - Moved outside nav for proper fixed positioning */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="fixed inset-0 z-[100] md:hidden flex flex-col p-8"
+                        style={{ backgroundColor: '#050508', opacity: 1 }}
+                    >
+                        <div className="flex items-center justify-between mb-12">
+                            <div className="flex items-center gap-2">
+                                <img 
+                                    src="/assets/images/logo.svg" 
+                                    alt="Stanza Logo" 
+                                    className="w-10 h-10 rounded-xl"
+                                />
+                                <span className="text-xl font-bold tracking-tight text-text-primary">
+                                    Stanza<span className="text-accent">.</span>
+                                </span>
+                            </div>
+                            <button 
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="p-2 text-text-secondary hover:text-accent bg-glass rounded-xl border border-glass-border"
+                            >
+                                <FiX size={24} />
+                            </button>
+                        </div>
+
+                        <div className="flex flex-col gap-6">
+                            {isAuthenticated ? (
+                                <>
+                                    <Link 
+                                        to="/feed" 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-2xl font-serif font-bold text-text-primary hover:text-accent flex items-center gap-4"
+                                    >
+                                        <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent">
+                                            <RiQuillPenLine size={24} />
+                                        </div>
+                                        Feed
+                                    </Link>
+                                    <Link 
+                                        to="/editor" 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-2xl font-serif font-bold text-text-primary hover:text-accent flex items-center gap-4"
+                                    >
+                                        <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center text-accent">
+                                            <RiFileEditLine size={24} />
+                                        </div>
+                                        Write
+                                    </Link>
+                                    <div className="h-px bg-glass-border my-2" />
+                                    <Link 
+                                        to={`/profile/${userProfile?.username || localStorage.getItem('userId')}`} 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-xl font-medium text-text-secondary hover:text-accent flex items-center gap-4"
+                                    >
+                                        <FiUser size={24} />
+                                        My Profile
+                                    </Link>
+                                    <Link 
+                                        to="/settings" 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-xl font-medium text-text-secondary hover:text-accent flex items-center gap-4"
+                                    >
+                                        <RiUserSettingsLine size={24} />
+                                        Settings
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            handleLogout();
+                                            setMobileMenuOpen(false);
+                                        }}
+                                        className="text-xl font-medium text-error hover:text-error/80 flex items-center gap-4 mt-4"
+                                    >
+                                        <BiLogOut size={24} />
+                                        Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="flex flex-col gap-4 pt-4">
+                                    <Link 
+                                        to="/login" 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="btn-secondary !py-4 justify-center text-xl"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link 
+                                        to="/signup" 
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="btn-primary !py-4 justify-center text-xl"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-auto text-center">
+                            <p className="text-text-muted text-sm italic font-serif">
+                                "Poetry is the rhythmical creation of beauty in words."
+                            </p>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <main className="flex-1">
                 <Outlet />

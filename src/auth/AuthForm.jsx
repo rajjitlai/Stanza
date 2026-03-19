@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageAnimation from "../common/PageAnimation";
-import { loginWithEmail, signupWithEmail } from "../config/supabase";
+import { signupWithEmail, loginWithEmail } from "../config/supabase";
 import toast from 'react-hot-toast';
-import InputBox from '../components/InputBox';
 import { MdEmail, MdLock } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { RiQuillPenLine } from 'react-icons/ri';
@@ -113,22 +112,22 @@ const AuthForm = ({ type = "login" }) => {
                     <motion.div 
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="glass-card p-8 md:p-12 relative overflow-hidden"
+                        className="glass-card p-6 sm:p-8 md:p-12 relative overflow-hidden"
                     >
                         {/* Decorative Gradient */}
                         <div className="absolute -top-24 -right-24 w-48 h-48 bg-accent/10 blur-[80px] rounded-full" />
                         
                         <div className="relative z-10">
-                            <div className="mb-10">
-                                <h2 className="text-3xl font-serif font-bold text-text-primary mb-2">
+                            <div className="mb-8 md:mb-10">
+                                <h2 className="text-2xl sm:text-3xl font-serif font-bold text-text-primary mb-2">
                                     {type === 'login' ? 'Welcome Back' : 'Begin Your Journey'}
                                 </h2>
-                                <p className="text-text-secondary">
+                                <p className="text-text-secondary text-sm sm:text-base">
                                     {type === 'login' ? 'The ink is waiting. Continue your story.' : 'Create your account and start sharing stanzas.'}
                                 </p>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
+                            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                                 <div className="space-y-4">
                                     <div className="relative group">
                                         <div className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-accent transition-colors">
@@ -139,7 +138,7 @@ const AuthForm = ({ type = "login" }) => {
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                             placeholder="Email Address"
-                                            className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                            className="w-full bg-glass border border-glass-border rounded-xl py-3 sm:py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50 text-sm sm:text-base"
                                         />
                                     </div>
 
@@ -152,7 +151,7 @@ const AuthForm = ({ type = "login" }) => {
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             placeholder="Password"
-                                            className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                            className="w-full bg-glass border border-glass-border rounded-xl py-3 sm:py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50 text-sm sm:text-base"
                                         />
                                     </div>
 
@@ -166,7 +165,7 @@ const AuthForm = ({ type = "login" }) => {
                                                 value={confirmPassword}
                                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                                 placeholder="Confirm Password"
-                                                className="w-full bg-glass border border-glass-border rounded-xl py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50"
+                                                className="w-full bg-glass border border-glass-border rounded-xl py-3 sm:py-3.5 pl-12 pr-4 outline-none focus:border-accent/40 focus:ring-1 focus:ring-accent/20 transition-all text-text-primary placeholder:text-text-muted/50 text-sm sm:text-base"
                                             />
                                         </div>
                                     )}
@@ -174,7 +173,7 @@ const AuthForm = ({ type = "login" }) => {
 
                                 <button
                                     type="submit"
-                                    className="btn-primary w-full justify-center !py-3.5 mt-8 shadow-accent-glow"
+                                    className="btn-primary w-full justify-center !py-3 sm:!py-3.5 mt-6 sm:mt-8 shadow-accent-glow"
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (
@@ -188,7 +187,7 @@ const AuthForm = ({ type = "login" }) => {
                                 </button>
 
                                 <div className="pt-6 text-center border-t border-glass-border">
-                                    <p className="text-text-secondary text-sm">
+                                    <p className="text-text-secondary text-xs sm:text-sm">
                                         {type === 'login' ? "New to the community? " : "Already sharing stanzas? "}
                                         <Link to={type === 'login' ? '/signup' : '/login'} className="text-accent font-bold hover:text-accent-light transition-colors underline underline-offset-4 decoration-accent/30">
                                             {type === 'login' ? 'Create an account' : 'Sign in here'}

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getPoemById, getUserProfile } from '../config/supabase';
+import { getPoemLikes, checkUserLike } from '../config/likes';
+import { getPoemSaves, checkSaved } from '../config/saved';
 import toast from 'react-hot-toast';
 import PageAnimation from '../common/PageAnimation';
 import LikeButton from '../components/LikeButton';
@@ -17,6 +19,12 @@ const PoemDetail = () => {
     const [author, setAuthor] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [shareModalOpen, setShareModalOpen] = useState(false);
+    
+    // Stats state
+    const [likesCount, setLikesCount] = useState(0);
+    const [savesCount, setSavesCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
 
     const userId = localStorage.getItem('userId');
 
@@ -30,8 +38,27 @@ const PoemDetail = () => {
             setPoem(data);
 
             if (data?.user_id) {
+                // Fetch author profile
                 const authorData = await getUserProfile(data.user_id);
                 setAuthor(authorData);
+
+                // Fetch stats in parallel
+                const [likes, saves] = await Promise.all([
+                    getPoemLikes(id),
+                    getPoemSaves(id)
+                ]);
+                setLikesCount(likes);
+                setSavesCount(saves);
+
+                // Check user interaction if logged in
+                if (userId) {
+                    const [likedData, savedData] = await Promise.all([
+                        checkUserLike(userId, id),
+                        checkSaved(userId, id)
+                    ]);
+                    setIsLiked(!!likedData);
+                    setIsSaved(!!savedData);
+                }
             }
         } catch (error) {
             toast.error(`Failed to load poem: ${error.message}`);
@@ -99,27 +126,27 @@ const PoemDetail = () => {
                     <motion.article 
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="glass-card p-8 md:p-16 mb-12 relative overflow-hidden"
+                        className="glass-card p-6 sm:p-10 md:p-16 mb-8 md:mb-12 relative overflow-hidden"
                     >
                         {/* Decorative Quote Mark */}
-                        <div className="absolute top-8 left-8 text-8xl font-serif text-accent/5 select-none leading-none">
+                        <div className="absolute top-4 left-4 sm:top-8 sm:left-8 text-6xl sm:text-8xl font-serif text-accent/5 select-none leading-none">
                             "
                         </div>
 
-                        <header className="mb-12 text-center relative z-10">
-                            <div className="flex items-center justify-center gap-3 mb-6">
+                        <header className="mb-8 md:mb-12 text-center relative z-10">
+                            <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap">
                                 <span className="category-badge">{poem.category || 'general'}</span>
-                                <span className="h-px w-8 bg-glass-border" />
-                                <span className="text-xs text-text-muted uppercase tracking-[0.2em]">
+                                <span className="h-px w-4 sm:w-8 bg-glass-border hidden sm:block" />
+                                <span className="text-[10px] sm:text-xs text-text-muted uppercase tracking-[0.2em]">
                                     {formatTime(poem.created_at)}
                                 </span>
                             </div>
                             
-                            <h1 className="poem-title !text-4xl md:!text-6xl mb-4 leading-tight">
+                            <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif font-bold text-text-primary mb-4 leading-tight">
                                 {poem.title}
                             </h1>
                             
-                            <p className="text-text-secondary font-serif italic text-lg">
+                            <p className="text-text-secondary font-serif italic text-base sm:text-lg">
                                 by <Link to={`/profile/${poem.profiles?.username || poem.user_id}`} className="text-accent underline underline-offset-8 decoration-accent/30 hover:text-accent-light transition-colors">
                                     {poem.profiles?.username || 'Anonymous'}
                                 </Link>
@@ -127,22 +154,22 @@ const PoemDetail = () => {
                         </header>
 
                         <div className="relative z-10">
-                            <pre className="poem-text text-center mx-auto max-w-prose">
+                            <pre className="poem-text text-center mx-auto max-w-prose !text-base sm:!text-lg md:!text-xl leading-relaxed sm:leading-[1.8]">
                                 {poem.content}
                             </pre>
                         </div>
 
-                        <div className="mt-16 flex items-center justify-center gap-8 pt-8 border-t border-glass-border">
+                        <div className="mt-12 sm:mt-16 flex items-center justify-center gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-glass-border">
                             <LikeButton
                                 poemId={poem.id}
-                                initialLiked={false}
-                                initialCount={0}
+                                initialLiked={isLiked}
+                                initialCount={likesCount}
                             />
                             <div className="h-4 w-px bg-glass-border" />
                             <SaveButton
                                 poemId={poem.id}
-                                initialSaved={false}
-                                initialCount={0}
+                                initialSaved={isSaved}
+                                initialCount={savesCount}
                             />
                         </div>
                     </motion.article>

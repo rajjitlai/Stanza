@@ -84,29 +84,31 @@ const Settings = () => {
                     <p className="text-text-secondary italic font-serif">Tailor your stanza experience</p>
                 </header>
 
-                <div className="grid md:grid-cols-4 gap-8">
-                    {/* Navigation Sidebar */}
-                    <aside className="md:col-span-1 space-y-2">
-                        {[
-                            { id: 'profile', label: 'Profile', icon: <RiUser3Line /> },
-                            { id: 'account', label: 'Account', icon: <RiShieldLine /> },
-                            { id: 'notifications', label: 'Preferences', icon: <RiNotification3Line /> },
-                        ].map(tab => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium ${
-                                    activeTab === tab.id
-                                        ? "bg-accent text-darker-bg shadow-lg shadow-accent/20"
-                                        : "text-text-secondary hover:bg-glass hover:text-text-primary"
-                                }`}
-                            >
-                                <span className="text-xl">{tab.icon}</span>
-                                <span>{tab.label}</span>
-                            </button>
-                        ))}
+                <div className="flex flex-col md:grid md:grid-cols-4 gap-8">
+                    {/* Navigation Sidebar / Mobile Tabs */}
+                    <aside className="md:col-span-1">
+                        <div className="flex md:flex-col overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 gap-2 no-scrollbar">
+                            {[
+                                { id: 'profile', label: 'Profile', icon: <RiUser3Line /> },
+                                { id: 'account', label: 'Account', icon: <RiShieldLine /> },
+                                { id: 'notifications', label: 'Preferences', icon: <RiNotification3Line /> },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex-shrink-0 md:w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-medium text-sm md:text-base ${
+                                        activeTab === tab.id
+                                            ? "bg-accent text-darker-bg shadow-lg shadow-accent/20"
+                                            : "text-text-secondary hover:bg-glass hover:text-text-primary"
+                                    }`}
+                                >
+                                    <span className="text-xl">{tab.icon}</span>
+                                    <span>{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
                         
-                        <div className="pt-8 mt-8 border-t border-glass-border">
+                        <div className="hidden md:block pt-8 mt-8 border-t border-glass-border">
                             <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-text-muted hover:text-error hover:bg-error/5 transition-all duration-300"
@@ -121,31 +123,31 @@ const Settings = () => {
                     <main className="md:col-span-3">
                         <motion.div
                             key={activeTab}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="glass-card p-8"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="glass-card p-6 md:p-8"
                         >
                             {activeTab === 'profile' && (
-                                <form onSubmit={handleSaveProfile} className="space-y-8">
+                                <form onSubmit={handleSaveProfile} className="space-y-6 md:space-y-8">
                                     <div className="space-y-6">
                                         <div className="flex items-center gap-3 text-text-primary mb-2">
                                             <RiProfileLine className="text-accent text-xl" />
-                                            <h2 className="text-2xl font-serif font-bold">Public Profile</h2>
+                                            <h2 className="text-xl md:text-2xl font-serif font-bold">Public Profile</h2>
                                         </div>
 
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Username</label>
+                                                <label className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Username</label>
                                                 <input
                                                     type="text"
                                                     value={username}
                                                     onChange={(e) => setUsername(e.target.value)}
                                                     placeholder="Poetic moniker..."
-                                                    className="input-field"
+                                                    className="input-field text-sm md:text-base"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Location</label>
+                                                <label className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Location</label>
                                                 <div className="relative">
                                                     <RiMapPinLine className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                                     <input
@@ -153,26 +155,31 @@ const Settings = () => {
                                                         value={location}
                                                         onChange={(e) => setLocation(e.target.value)}
                                                         placeholder="Where do your verses roam?"
-                                                        className="input-field !pl-12"
+                                                        className="input-field !pl-12 text-sm md:text-base"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Short Bio</label>
+                                            <div className="flex justify-between items-center ml-1">
+                                                <label className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest">Short Bio</label>
+                                                <span className={`text-[10px] font-medium ${bio.length > 160 ? 'text-error' : 'text-text-muted'}`}>
+                                                    {bio.length}/160
+                                                </span>
+                                            </div>
                                             <textarea
                                                 value={bio}
-                                                onChange={(e) => setBio(e.target.value)}
+                                                onChange={(e) => setBio(e.target.value.slice(0, 160))}
                                                 placeholder="A few lines about your soul..."
                                                 rows="4"
-                                                className="input-field resize-none italic font-serif"
+                                                className="input-field resize-none italic font-serif text-sm md:text-base"
                                             />
                                         </div>
 
                                         <div className="grid md:grid-cols-2 gap-6 pt-4 border-t border-glass-border">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Avatar URL</label>
+                                                <label className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Avatar URL</label>
                                                 <div className="relative">
                                                     <RiImageLine className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                                     <input
@@ -180,12 +187,12 @@ const Settings = () => {
                                                         value={avatarUrl}
                                                         onChange={(e) => setAvatarUrl(e.target.value)}
                                                         placeholder="https://..."
-                                                        className="input-field !pl-12"
+                                                        className="input-field !pl-12 text-sm md:text-base"
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Banner URL</label>
+                                                <label className="text-[10px] md:text-xs font-bold text-text-muted uppercase tracking-widest ml-1">Banner URL</label>
                                                 <div className="relative">
                                                     <RiImageLine className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" />
                                                     <input
@@ -193,18 +200,26 @@ const Settings = () => {
                                                         value={bannerUrl}
                                                         onChange={(e) => setBannerUrl(e.target.value)}
                                                         placeholder="https://..."
-                                                        className="input-field !pl-12"
+                                                        className="input-field !pl-12 text-sm md:text-base"
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex justify-end pt-6 border-t border-glass-border">
+                                    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6 border-t border-glass-border">
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            className="md:hidden flex items-center gap-2 text-text-muted hover:text-error transition-colors text-sm font-medium"
+                                        >
+                                            <RiLogoutCircleLine />
+                                            Logout
+                                        </button>
                                         <button
                                             type="submit"
                                             disabled={isLoading}
-                                            className="btn-primary !py-3 shadow-accent-glow"
+                                            className="btn-primary w-full sm:w-auto !py-3 shadow-accent-glow justify-center"
                                         >
                                             <RiSaveLine size={20} />
                                             <span>{isLoading ? 'Updating Scroll...' : 'Save Stanza Profile'}</span>

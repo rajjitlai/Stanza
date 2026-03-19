@@ -87,30 +87,42 @@ const PoemEditor = () => {
                     </header>
 
                     {/* Editor Form */}
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                             {/* Main Content */}
                             <div className="md:col-span-2 space-y-6">
-                                <div className="glass-card p-8">
+                                <div className="glass-card p-6 md:p-8">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Title</label>
+                                        <span className={`text-[10px] font-medium ${title.length > 100 ? 'text-error' : 'text-text-muted'}`}>
+                                            {title.length}/100
+                                        </span>
+                                    </div>
                                     <input
                                         type="text"
                                         value={title}
-                                        onChange={(e) => setTitle(e.target.value)}
+                                        onChange={(e) => setTitle(e.target.value.slice(0, 100))}
                                         placeholder="Poem Title"
-                                        className="w-full bg-transparent border-none text-4xl font-serif font-bold text-text-primary placeholder:text-text-muted/30 outline-none mb-8"
+                                        className="w-full bg-transparent border-none text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-text-primary placeholder:text-text-muted/30 outline-none mb-6 md:mb-8"
                                     />
                                     
+                                    <div className="flex justify-between items-center mb-2">
+                                        <label className="text-[10px] font-bold text-text-muted uppercase tracking-widest ml-1">Stanza</label>
+                                        <span className={`text-[10px] font-medium ${content.length > 5000 ? 'text-error' : 'text-text-muted'}`}>
+                                            {content.length}/5000
+                                        </span>
+                                    </div>
                                     <textarea
                                         value={content}
-                                        onChange={(e) => setContent(e.target.value)}
+                                        onChange={(e) => setContent(e.target.value.slice(0, 5000))}
                                         placeholder="Write your stanza here..."
-                                        rows="15"
-                                        className="w-full bg-transparent border-none text-xl font-serif leading-[1.8] text-text-secondary placeholder:text-text-muted/30 outline-none resize-none"
+                                        rows="12"
+                                        className="w-full bg-transparent border-none text-lg md:text-xl font-serif leading-[1.8] text-text-secondary placeholder:text-text-muted/30 outline-none resize-none"
                                     />
                                     
-                                    <div className="mt-8 pt-6 border-t border-glass-border flex justify-between text-xs text-text-muted uppercase tracking-widest">
-                                        <span>Character count: {content.length}</span>
-                                        <span>Poetry is silence in search of a sound</span>
+                                    <div className="mt-6 md:mt-8 pt-6 border-t border-glass-border flex flex-col sm:flex-row justify-between text-[10px] md:text-xs text-text-muted uppercase tracking-widest gap-2">
+                                        <span>Focus on the rhythm of your words</span>
+                                        <span className="italic">Poetry is silence in search of a sound</span>
                                     </div>
                                 </div>
                             </div>

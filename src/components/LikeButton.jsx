@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toggleLike } from '../config/likes';
 import toast from 'react-hot-toast';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
@@ -10,6 +10,12 @@ const LikeButton = ({ poemId, initialLiked = false, initialCount = 0 }) => {
     const [isLoading, setIsLoading] = useState(false);
     const userId = localStorage.getItem('userId');
 
+    // Sync state with props if they change
+    useEffect(() => {
+        setLiked(initialLiked);
+        setCount(initialCount);
+    }, [initialLiked, initialCount]);
+
     const handleLike = async () => {
         if (!userId) {
             toast.error('Please log in to like poems');
@@ -17,11 +23,20 @@ const LikeButton = ({ poemId, initialLiked = false, initialCount = 0 }) => {
         }
 
         setIsLoading(true);
+        // Optimistic update
+        const prevLiked = liked;
+        const prevCount = count;
+        setLiked(!prevLiked);
+        setCount(prev => !prevLiked ? prev + 1 : prev - 1);
+
         try {
-            const newLikedState = await toggleLike(userId, poemId, liked);
+            const newLikedState = await toggleLike(userId, poemId, prevLiked);
+            // Confirm state from server
             setLiked(newLikedState);
-            setCount(prev => newLikedState ? prev + 1 : prev - 1);
         } catch (error) {
+            // Revert on error
+            setLiked(prevLiked);
+            setCount(prevCount);
             toast.error(`Failed to like poem: ${error.message}`);
         } finally {
             setIsLoading(false);

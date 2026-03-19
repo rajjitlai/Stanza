@@ -23,7 +23,7 @@ const App = () => {
         toastOptions={{
           style: {
             background: 'rgba(20, 20, 28, 0.8)',
-            backdropFilter: 'blur(120px)',
+            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(212, 175, 55, 0.2)',
             color: '#f8f8f8',
             borderRadius: '16px',
@@ -48,7 +48,6 @@ const App = () => {
       <Routes>
         {/* Main Layout with Navbar (Accessible to all) */}
         <Route path="/" element={<Navbar />}>
-          <Route index element={<LandingPage />} />
           <Route path="feed" element={<Feed />} />
           <Route path="profile/:username" element={<PublicProfile />} />
           <Route path="poem/:id" element={<PoemDetail />} />
@@ -56,6 +55,7 @@ const App = () => {
           
           {/* Public Routes (Only if not logged in) */}
           <Route element={<PublicRoute />}>
+            <Route index element={<LandingPage />} />
             <Route path="login" element={<AuthForm type="login" />} />
             <Route path="signup" element={<AuthForm type="signup" />} />
             <Route path="auth-redirect" element={<AuthRedirect />} />
