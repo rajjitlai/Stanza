@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { toggleSave } from '../config/saved';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { RiBookmarkFill, RiBookmarkLine } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SaveButton = ({ poemId, initialSaved = false, initialCount = 0 }) => {
+    const { user } = useAuth();
     const [saved, setSaved] = useState(initialSaved);
     const [count, setCount] = useState(initialCount);
     const [isLoading, setIsLoading] = useState(false);
-    const userId = localStorage.getItem('userId');
+    const userId = user?.id;
 
     // Sync state with props if they change
     useEffect(() => {

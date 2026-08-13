@@ -1,28 +1,19 @@
-import { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { getAuthSession } from '../config/supabase';
+import { useAuth } from '../context/AuthContext';
 
 const PublicRoute = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const session = await getAuthSession();
-                setIsAuthenticated(!!session?.user);
-            } catch (error) {
-                setIsAuthenticated(false);
-            }
-        };
-
-        checkAuth();
-    }, []);
-
-    if (isAuthenticated === null) {
-        return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="spinner mb-4" />
+                <p className="text-text-muted italic text-sm">Checking status...</p>
+            </div>
+        );
     }
 
-    return isAuthenticated ? <Navigate to="/feed" /> : <Outlet />;
+    return user ? <Navigate to="/feed" replace /> : <Outlet />;
 };
 
 export default PublicRoute;

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiShare2, FiCheck, FiCopy, FiTwitter, FiFacebook, FiLink, FiX } from 'react-icons/fi';
+import { FiShare2, FiCheck, FiCopy, FiTwitter, FiFacebook, FiX } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-const ShareModal = ({ poemId, poemTitle, onClose }) => {
+const ShareModal = ({ poemTitle, onClose }) => {
     const [showCopied, setShowCopied] = useState(false);
     const modalRef = useRef(null);
 
@@ -35,7 +35,7 @@ const ShareModal = ({ poemId, poemTitle, onClose }) => {
             toast.success('Link copied to clipboard!');
             setTimeout(() => setShowCopied(false), 2000);
         } catch (error) {
-            toast.error('Failed to copy link');
+            toast.error(`Failed to copy link: ${error.message || 'Unknown error'}`);
         }
     };
 

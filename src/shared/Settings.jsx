@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout, getUserProfile, updateUserProfile } from '../config/supabase';
+import { updateUserProfile } from '../config/supabase';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import PageAnimation from '../common/PageAnimation';
 import { RiUser3Line, RiShieldLine, RiNotification3Line, RiLogoutCircleLine, RiSaveLine, RiImageLine, RiMapPinLine, RiProfileLine } from 'react-icons/ri';
@@ -8,6 +9,7 @@ import { motion } from 'framer-motion';
 
 const Settings = () => {
     const navigate = useNavigate();
+    const { user, profile, logout, refreshProfile } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('profile');
 
@@ -18,31 +20,19 @@ const Settings = () => {
     const [avatarUrl, setAvatarUrl] = useState('');
     const [bannerUrl, setBannerUrl] = useState('');
 
-    const userId = localStorage.getItem('userId');
-
     useEffect(() => {
-        if (userId) {
-            loadProfile();
-        }
-    }, [userId]);
-
-    const loadProfile = async () => {
-        try {
-            const profile = await getUserProfile(userId);
+        if (profile) {
             setUsername(profile.username || '');
             setBio(profile.bio || '');
             setLocation(profile.location || '');
             setAvatarUrl(profile.avatar_url || '');
             setBannerUrl(profile.banner_url || '');
-        } catch (error) {
-            console.error('Error loading profile:', error);
         }
-    };
+    }, [profile]);
 
     const handleLogout = async () => {
         try {
             await logout();
-            localStorage.removeItem('userId');
             toast.success('Logged out successfully!');
             navigate('/login');
         } catch (error) {
@@ -52,7 +42,7 @@ const Settings = () => {
 
     const handleSaveProfile = async (e) => {
         e.preventDefault();
-        if (!userId) {
+        if (!user?.id) {
             toast.error('Please log in to update your profile');
             return;
         }
@@ -67,7 +57,8 @@ const Settings = () => {
                 banner_url: bannerUrl.trim() || undefined,
             };
 
-            await updateUserProfile(userId, updates);
+            await updateUserProfile(user.id, updates);
+            await refreshProfile();
             toast.success('Profile updated successfully!');
         } catch (error) {
             toast.error(`Failed to update profile: ${error.message}`);

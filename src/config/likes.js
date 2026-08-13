@@ -48,16 +48,12 @@ export const removeLike = async (userId, poemId) => {
 
 // Toggle like (add if not liked, remove if liked)
 export const toggleLike = async (userId, poemId, currentLiked) => {
-    try {
-        if (currentLiked) {
-            await removeLike(userId, poemId);
-            return false;
-        } else {
-            await addLike(userId, poemId);
-            return true;
-        }
-    } catch (error) {
-        throw error;
+    if (currentLiked) {
+        await removeLike(userId, poemId);
+        return false;
+    } else {
+        await addLike(userId, poemId);
+        return true;
     }
 };
 
@@ -85,19 +81,18 @@ export const getUserLikedPoems = async (userId) => {
 
 // Bulk get like counts for multiple poems
 export const getPoemsLikeCounts = async (poemIds) => {
-    if (poemIds.length === 0) return {};
+    if (!poemIds || poemIds.length === 0) return {};
 
     const { data, error } = await supabase
         .from('user_likes')
-        .select('poem_id, count')
-        .in('poem_id', poemIds)
-        .group('poem_id');
+        .select('poem_id')
+        .in('poem_id', poemIds);
 
     if (error) throw error;
 
     const counts = {};
-    data.forEach(item => {
-        counts[item.poem_id] = item.count;
+    (data || []).forEach(item => {
+        counts[item.poem_id] = (counts[item.poem_id] || 0) + 1;
     });
 
     return counts;

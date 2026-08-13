@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { getPoemComments, addComment, deleteComment } from '../config/comments';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { RiMessage3Line, RiSendPlane2Line, RiDeleteBinLine } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const CommentsList = ({ poemId }) => {
+    const { user } = useAuth();
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const userId = localStorage.getItem('userId');
+    const userId = user?.id;
 
     useEffect(() => {
         loadComments();
@@ -46,7 +49,7 @@ const CommentsList = ({ poemId }) => {
             setComments(prev => prev.filter(c => c.id !== commentId));
             toast.success('Reflection removed');
         } catch (error) {
-            toast.error('Failed to delete comment');
+            toast.error(`Failed to delete comment: ${error.message || 'Unknown error'}`);
         }
     };
 

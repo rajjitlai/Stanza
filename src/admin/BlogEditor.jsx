@@ -1,20 +1,73 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import PageAnimation from "../common/PageAnimation"
 import toast from "react-hot-toast"
-import { createPoem } from "../config/supabase"
-import { RiQuillPenLine, RiDraftLine, RiCloseLine } from "react-icons/ri"
-import { motion } from "framer-motion"
+import { createPoem, updatePoem, getPoemById } from "../config/supabase"
+import { useAuth } from "../context/AuthContext"
+import { RiQuillPenLine, RiCloseLine, RiSave3Line } from "react-icons/ri"
 
-const PoemEditor = () => {
+const PoemEditor = ({ poemId }) => {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [title, setTitle] = useState("")
     const [category, setCategory] = useState("general")
     const [content, setContent] = useState("")
-    const [isDraft, setIsDraft] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const [isFetchingPoem, setIsFetchingPoem] = useState(false)
 
     const categories = ["general", "love", "nature", "reflection", "social", "other"]
+    const isEditMode = !!poemId
+
+    useEffect(() => {
+        if (isEditMode) {
+            fetchPoemToEdit()
+        } else {
+            // Load saved draft from local storage if available
+            const savedDraft = localStorage.getItem("stanza_draft")
+            if (savedDraft) {
+                try {
+                    const parsed = JSON.parse(savedDraft)
+                    if (parsed.title) setTitle(parsed.title)
+                    if (parsed.content) setContent(parsed.content)
+                    if (parsed.category) setCategory(parsed.category)
+                } catch (e) {
+                    console.error("Failed to parse local draft", e)
+                }
+            }
+        }
+    }, [poemId])
+
+    const fetchPoemToEdit = async () => {
+        setIsFetchingPoem(true)
+        try {
+            const poem = await getPoemById(poemId)
+            if (poem) {
+                if (user?.id && poem.user_id !== user.id) {
+                    toast.error("You are not authorized to edit this stanza.")
+                    navigate("/feed")
+                    return
+                }
+                setTitle(poem.title || "")
+                setContent(poem.content || "")
+                setCategory(poem.category || "general")
+            }
+        } catch (error) {
+            toast.error(`Failed to load stanza: ${error.message}`)
+            navigate("/feed")
+        } finally {
+            setIsFetchingPoem(false)
+        }
+    }
+
+    const handleSaveDraft = () => {
+        if (!title.trim() && !content.trim()) {
+            toast.error("Nothing to save in draft yet.")
+            return
+        }
+        const draft = { title, content, category, updatedAt: new Date().toISOString() }
+        localStorage.setItem("stanza_draft", JSON.stringify(draft))
+        toast.success("Draft saved locally! Resume writing anytime.")
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -27,30 +80,40 @@ const PoemEditor = () => {
                 return
             }
 
-            const userId = localStorage.getItem("userId")
-            if (!userId) {
+            if (!user?.id) {
                 toast.error("Please log in first")
                 navigate("/login")
                 return
             }
 
-            if (isDraft) {
-                toast.success("Poem saved as draft!")
+            if (isEditMode) {
+                await updatePoem(poemId, {
+                    title: title.trim(),
+                    content: content.trim(),
+                    category,
+                })
+                toast.success("Poem updated successfully!")
             } else {
-                await createPoem(userId, title, content, category)
-                toast.success("Poem submitted successfully!")
+                await createPoem(user.id, title.trim(), content.trim(), category)
+                localStorage.removeItem("stanza_draft")
+                toast.success("Poem published successfully!")
             }
 
-            setTitle("")
-            setCategory("general")
-            setContent("")
-            setIsDraft(false)
             navigate("/feed")
         } catch (error) {
             toast.error(`Error submitting poem: ${error.message}`)
         } finally {
             setIsLoading(false)
         }
+    }
+
+    if (isFetchingPoem) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="spinner mb-4" />
+                <p className="text-text-muted italic text-sm">Retrieving your verse...</p>
+            </div>
+        )
     }
 
     return (
@@ -65,7 +128,7 @@ const PoemEditor = () => {
                             </div>
                             <div>
                                 <h1 className="text-xl font-bold text-text-primary">
-                                    {isDraft ? "Refining Draft" : "New Stanza"}
+                                    {isEditMode ? "Editing Stanza" : "New Stanza"}
                                 </h1>
                                 <p className="text-xs text-text-muted uppercase tracking-widest">Creative Workshop</p>
                             </div>
@@ -75,13 +138,23 @@ const PoemEditor = () => {
                                 <RiCloseLine size={20} />
                                 <span>Cancel</span>
                             </Link>
+                            {!isEditMode && (
+                                <button
+                                    type="button"
+                                    onClick={handleSaveDraft}
+                                    className="btn-secondary !py-2 flex-1 md:flex-none justify-center text-accent hover:border-accent/40"
+                                >
+                                    <RiSave3Line size={20} />
+                                    <span>Save Draft</span>
+                                </button>
+                            )}
                             <button
                                 onClick={handleSubmit}
                                 disabled={isLoading}
                                 className="btn-primary !py-2 flex-1 md:flex-none justify-center shadow-accent-glow"
                             >
                                 <RiQuillPenLine size={20} />
-                                <span>{isLoading ? "Publishing..." : "Publish"}</span>
+                                <span>{isLoading ? (isEditMode ? "Updating..." : "Publishing...") : (isEditMode ? "Update Stanza" : "Publish")}</span>
                             </button>
                         </div>
                     </header>

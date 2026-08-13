@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PageAnimation from "../common/PageAnimation";
-import { signupWithEmail, loginWithEmail } from "../config/supabase";
+import { useAuth } from "../context/AuthContext";
 import toast from 'react-hot-toast';
 import { MdEmail, MdLock } from 'react-icons/md';
 import { motion } from 'framer-motion';
@@ -10,6 +10,7 @@ import { RiQuillPenLine } from 'react-icons/ri';
 // eslint-disable-next-line react/prop-types
 const AuthForm = ({ type = "login" }) => {
     const navigate = useNavigate();
+    const { login, signup } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -53,16 +54,13 @@ const AuthForm = ({ type = "login" }) => {
                     setIsLoading(false);
                     return;
                 }
-                await signupWithEmail(email, password);
+                await signup(email, password);
                 toast.success('Signup successful! Please log in.');
                 navigate('/login');
             } else {
-                const { user } = await loginWithEmail(email, password);
-                if (user) {
-                    localStorage.setItem('userId', user.id);
-                }
+                await login(email, password);
                 toast.success('Login successful!');
-                window.location.href = '/feed';
+                navigate('/feed');
             }
         } catch (error) {
             toast.error(`Error: ${error.message}`);

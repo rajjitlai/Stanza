@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { getAllPoems, getAllUsers, deleteUser, deletePoem } from '../config/supabase';
 import toast from 'react-hot-toast';
 import PageAnimation from '../common/PageAnimation';
-import { RiDashboardLine, RiQuillPenLine, RiUserLine, RiDeleteBin6Line, RiBarChartLine, RiDiscussLine, RiHeartFill } from 'react-icons/ri';
+import { RiDashboardLine, RiQuillPenLine, RiUserLine, RiDeleteBin6Line, RiDiscussLine, RiHeartFill } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminDashboard = () => {

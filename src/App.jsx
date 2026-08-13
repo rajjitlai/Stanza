@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from "react-router-dom"
+import { lazy, Suspense } from "react"
+import { Route, Routes } from "react-router-dom"
 import Navbar from "./components/Navbar"
 import AuthForm from "./auth/AuthForm"
 import Feed from "./shared/Feed"
@@ -6,14 +7,24 @@ import PublicProfile from "./shared/PublicProfile"
 import { Toaster } from "react-hot-toast"
 import PrivateRoute from "./auth/PrivateRoute"
 import PublicRoute from "./auth/PublicRoute"
-import Settings from "./shared/Settings"
+import AdminRoute from "./auth/AdminRoute"
 import AuthRedirect from "./auth/MagicURLRedirect"
-import Editor from "./admin/Editor"
 import PoemDetail from "./components/PoemDetail"
-import SearchResults from "./components/SearchResults"
-import AdminDashboard from "./admin/Dashboard"
 import LandingPage from "./components/LandingPage"
 import NotFound from "./components/NotFound"
+
+// Lazy loaded routes for chunk optimization
+const Settings = lazy(() => import("./shared/Settings"))
+const Editor = lazy(() => import("./admin/Editor"))
+const AdminDashboard = lazy(() => import("./admin/Dashboard"))
+const SearchResults = lazy(() => import("./components/SearchResults"))
+
+const PageLoader = () => (
+  <div className="flex flex-col items-center justify-center min-h-[50vh]">
+    <div className="spinner mb-4" />
+    <p className="text-text-muted italic text-sm">Loading stanza...</p>
+  </div>
+)
 
 const App = () => {
   return (
@@ -45,32 +56,39 @@ const App = () => {
           },
         }}
       />
-      <Routes>
-        {/* Main Layout with Navbar (Accessible to all) */}
-        <Route path="/" element={<Navbar />}>
-          <Route path="feed" element={<Feed />} />
-          <Route path="profile/:username" element={<PublicProfile />} />
-          <Route path="poem/:id" element={<PoemDetail />} />
-          <Route path="search" element={<SearchResults />} />
-          
-          {/* Public Routes (Only if not logged in) */}
-          <Route element={<PublicRoute />}>
-            <Route index element={<LandingPage />} />
-            <Route path="login" element={<AuthForm type="login" />} />
-            <Route path="signup" element={<AuthForm type="signup" />} />
-            <Route path="auth-redirect" element={<AuthRedirect />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Main Layout with Navbar */}
+          <Route path="/" element={<Navbar />}>
+            <Route path="feed" element={<Feed />} />
+            <Route path="profile/:username" element={<PublicProfile />} />
+            <Route path="poem/:id" element={<PoemDetail />} />
+            <Route path="search" element={<SearchResults />} />
+            
+            {/* Public Routes (Only if not logged in) */}
+            <Route element={<PublicRoute />}>
+              <Route index element={<LandingPage />} />
+              <Route path="login" element={<AuthForm type="login" />} />
+              <Route path="signup" element={<AuthForm type="signup" />} />
+              <Route path="auth-redirect" element={<AuthRedirect />} />
+            </Route>
+
+            {/* Protected Routes (Requires login) */}
+            <Route element={<PrivateRoute />}>
+              <Route path="settings" element={<Settings />} />
+              <Route path="editor" element={<Editor />} />
+              <Route path="editor/:id" element={<Editor />} />
+            </Route>
+
+            {/* Admin-Only Routes */}
+            <Route element={<AdminRoute />}>
+              <Route path="admin" element={<AdminDashboard />} />
+            </Route>
           </Route>
 
-          {/* Protected Routes (Requires login) */}
-          <Route element={<PrivateRoute />}>
-            <Route path="settings" element={<Settings />} />
-            <Route path="admin" element={<AdminDashboard />} />
-            <Route path="editor" element={<Editor />} />
-          </Route>
-        </Route>
-
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </div>
   )
 }

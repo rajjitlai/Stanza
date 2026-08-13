@@ -1,47 +1,26 @@
 import { Link, Outlet, useNavigate } from "react-router-dom"
 import { FiMenu, FiX, FiUser } from "react-icons/fi"
-import { RiUserSettingsLine, RiFileEditLine, RiQuillPenLine } from "react-icons/ri"
+import { RiUserSettingsLine, RiFileEditLine, RiQuillPenLine, RiDashboardLine } from "react-icons/ri"
 import { BiLogOut, BiSearch } from "react-icons/bi"
-import { useEffect, useState } from "react"
-import { getAuthSession, logout, getCurrentUser, getUserProfile } from "../config/supabase"
+import { useState } from "react"
+import { useAuth } from "../context/AuthContext"
 import toast from "react-hot-toast"
 import { motion, AnimatePresence } from "framer-motion"
 
 const Navbar = () => {
     const navigate = useNavigate()
+    const { user, profile, isAdmin, logout } = useAuth()
     const [searchToggle, setSearchToggle] = useState(false)
-    const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [userProfile, setUserProfile] = useState(null)
     const [searchQuery, setSearchQuery] = useState("")
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const session = await getAuthSession()
-                if (session?.user) {
-                    setIsAuthenticated(true)
-                    const profile = await getUserProfile(session.user.id)
-                    setUserProfile(profile)
-                } else {
-                    setIsAuthenticated(false)
-                    setUserProfile(null)
-                }
-            } catch (error) {
-                setIsAuthenticated(false)
-            }
-        }
-        checkAuth()
-    }, [])
+    const isAuthenticated = !!user
 
     const handleLogout = async () => {
         try {
             await logout()
-            localStorage.removeItem('userId')
-            setIsAuthenticated(false)
-            setUserProfile(null)
             toast.success('Logged out successfully!')
-            window.location.href = '/login'
+            navigate('/login')
         } catch (error) {
             toast.error(`Logout failed: ${error.message}`)
         }
@@ -94,8 +73,13 @@ const Navbar = () => {
                                 <RiFileEditLine className="text-lg" />
                                 <span>Write</span>
                             </Link>
+                            {isAdmin && (
+                                <Link to="/admin" className="p-2 text-accent hover:text-accent-light transition-colors" title="Admin Sanctum">
+                                    <RiDashboardLine size={24} />
+                                </Link>
+                            )}
                             <div className="h-6 w-px bg-glass-border mx-2" />
-                            <Link to={`/profile/${userProfile?.username || localStorage.getItem('userId')}`} className="p-2 text-text-secondary hover:text-accent transition-colors" title="My Profile">
+                            <Link to={`/profile/${profile?.username || user?.id}`} className="p-2 text-text-secondary hover:text-accent transition-colors" title="My Profile">
                                 <FiUser size={24} />
                             </Link>
                             <Link to="/settings" className="p-2 text-text-secondary hover:text-accent transition-colors" title="Settings">
@@ -162,10 +146,9 @@ const Navbar = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-
             </nav>
 
-            {/* Mobile Menu Full Overlay - Moved outside nav for proper fixed positioning */}
+            {/* Mobile Menu Full Overlay */}
             <AnimatePresence>
                 {mobileMenuOpen && (
                     <motion.div
@@ -218,9 +201,21 @@ const Navbar = () => {
                                         </div>
                                         Write
                                     </Link>
+                                    {isAdmin && (
+                                        <Link 
+                                            to="/admin" 
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className="text-2xl font-serif font-bold text-accent hover:text-accent-light flex items-center gap-4"
+                                        >
+                                            <div className="w-12 h-12 bg-accent/20 rounded-xl flex items-center justify-center text-accent">
+                                                <RiDashboardLine size={24} />
+                                            </div>
+                                            Admin Sanctum
+                                        </Link>
+                                    )}
                                     <div className="h-px bg-glass-border my-2" />
                                     <Link 
-                                        to={`/profile/${userProfile?.username || localStorage.getItem('userId')}`} 
+                                        to={`/profile/${profile?.username || user?.id}`} 
                                         onClick={() => setMobileMenuOpen(false)}
                                         className="text-xl font-medium text-text-secondary hover:text-accent flex items-center gap-4"
                                     >

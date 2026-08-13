@@ -1,37 +1,19 @@
-import { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { getAuthSession } from '../config/supabase';
+import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(null);
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const session = await getAuthSession();
-                if (session?.user) {
-                    localStorage.setItem('userId', session.user.id);
-                    setIsAuthenticated(true);
-                } else {
-                    setIsAuthenticated(false);
-                }
-            } catch (error) {
-                setIsAuthenticated(false);
-            }
-        };
-
-        checkAuth();
-    }, []);
-
-    if (isAuthenticated === null) {
-        return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh]">
+                <div className="spinner mb-4" />
+                <p className="text-text-muted italic text-sm">Authenticating...</p>
+            </div>
+        );
     }
 
-    return (
-        <>
-            {isAuthenticated ? <Outlet /> : <Navigate to="/login" />}
-        </>
-    );
+    return user ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;

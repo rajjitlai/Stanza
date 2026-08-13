@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { toggleLike } from '../config/likes';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import { RiHeartFill, RiHeartLine } from 'react-icons/ri';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LikeButton = ({ poemId, initialLiked = false, initialCount = 0 }) => {
+    const { user } = useAuth();
     const [liked, setLiked] = useState(initialLiked);
     const [count, setCount] = useState(initialCount);
     const [isLoading, setIsLoading] = useState(false);
-    const userId = localStorage.getItem('userId');
+    const userId = user?.id;
 
     // Sync state with props if they change
     useEffect(() => {

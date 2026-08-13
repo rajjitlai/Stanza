@@ -48,16 +48,12 @@ export const unsavePoem = async (userId, poemId) => {
 
 // Toggle save (save if not saved, unsave if saved)
 export const toggleSave = async (userId, poemId, isSaved) => {
-    try {
-        if (isSaved) {
-            await unsavePoem(userId, poemId);
-            return false;
-        } else {
-            await savePoem(userId, poemId);
-            return true;
-        }
-    } catch (error) {
-        throw error;
+    if (isSaved) {
+        await unsavePoem(userId, poemId);
+        return false;
+    } else {
+        await savePoem(userId, poemId);
+        return true;
     }
 };
 
@@ -85,19 +81,18 @@ export const getSavedPoems = async (userId) => {
 
 // Bulk get save counts for multiple poems
 export const getPoemsSaveCounts = async (poemIds) => {
-    if (poemIds.length === 0) return {};
+    if (!poemIds || poemIds.length === 0) return {};
 
     const { data, error } = await supabase
         .from('saved_poems')
-        .select('poem_id, count')
-        .in('poem_id', poemIds)
-        .group('poem_id');
+        .select('poem_id')
+        .in('poem_id', poemIds);
 
     if (error) throw error;
 
     const counts = {};
-    data.forEach(item => {
-        counts[item.poem_id] = item.count;
+    (data || []).forEach(item => {
+        counts[item.poem_id] = (counts[item.poem_id] || 0) + 1;
     });
 
     return counts;

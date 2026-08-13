@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
-import { Link } from "react-router-dom"
-import { getUserPoems, getAllPoems, deletePoem, getAuthSession } from "../config/supabase"
+import { Link, useNavigate } from "react-router-dom"
+import { getUserPoems, getAllPoems, deletePoem } from "../config/supabase"
+import { useAuth } from "../context/AuthContext"
 import toast from "react-hot-toast"
 import PageAnimation from "../common/PageAnimation"
 import { RiDeleteBin6Line, RiPencilLine, RiSearchLine, RiQuillPenLine } from "react-icons/ri"
@@ -8,31 +9,14 @@ import { motion, AnimatePresence } from "framer-motion"
 import { CardSkeleton } from "../components/Skeleton"
 
 const Feed = () => {
+    const navigate = useNavigate()
+    const { user } = useAuth()
     const [poems, setPoems] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [filter, setFilter] = useState("all") // "all" or "mine"
     const [searchTerm, setSearchTerm] = useState("")
-    const [userId, setUserId] = useState(() => {
-        const id = localStorage.getItem("userId")
-        return id === "null" ? null : id
-    })
 
-    useEffect(() => {
-        const fetchUserId = async () => {
-            if (!userId || userId === "null") {
-                try {
-                    const session = await getAuthSession()
-                    if (session?.user) {
-                        setUserId(session.user.id)
-                        localStorage.setItem("userId", session.user.id)
-                    }
-                } catch (error) {
-                    console.error("Error fetching session:", error)
-                }
-            }
-        }
-        fetchUserId()
-    }, [userId])
+    const userId = user?.id
 
     const loadPoems = useCallback(async () => {
         setIsLoading(true)
@@ -198,9 +182,16 @@ const Feed = () => {
                                                 {userId === poem.user_id && (
                                                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <button
+                                                            onClick={() => navigate(`/editor/${poem.id}`)}
+                                                            className="p-2 bg-glass border border-glass-border text-accent rounded-lg hover:bg-accent/10 transition-all"
+                                                            title="Edit Stanza"
+                                                        >
+                                                            <RiPencilLine size={18} />
+                                                        </button>
+                                                        <button
                                                             onClick={() => handleDelete(poem.id)}
                                                             className="p-2 bg-error/10 text-error rounded-lg hover:bg-error hover:text-white transition-all"
-                                                            title="Delete"
+                                                            title="Delete Stanza"
                                                         >
                                                             <RiDeleteBin6Line size={18} />
                                                         </button>
